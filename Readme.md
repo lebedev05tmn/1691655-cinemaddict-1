@@ -1,7 +1,7 @@
 # Проект «Киноман»
 
 * Студент: [Andrey Vetrov](https://up.htmlacademy.ru/ecmascript-individual/1/user/1691655).
-* Наставник: `Неизвестно`.
+* Наставник: [Глеб Клецков] (https://htmlacademy.ru/profile/id1487865).
 
 ---
 
