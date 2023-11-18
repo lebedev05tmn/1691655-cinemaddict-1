@@ -1,0 +1,1 @@
+{"version":3,"file":"bundle.94ed1f374e24c2788414.js","mappings":"AAAoBA,SAASC,cAAc,SAE/BC,YAAc","sources":["webpack://cinemaddict/./src/main.js"],"sourcesContent":["const headerTitle = document.querySelector('.logo');\n\nheaderTitle.textContent = 'Changed';\n"],"names":["document","querySelector","textContent"],"sourceRoot":""}
