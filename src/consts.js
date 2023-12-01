@@ -5,12 +5,15 @@ export const SortType = {
 };
 
 export const FilterType = {
-  ALL: 'all',
-  WATCHLIST: 'watchlist',
-  HISTORY: 'history',
-  FAVORITES: 'favorites',
+  ALL: 'All movies',
+  WATCHLIST: 'Watchlist',
+  HISTORY: 'History',
+  FAVORITES: 'Favorites',
 };
 
-export const FilmsNumberPerPage = 5;
-export const TopRatedNumberPerPage = 2;
-export const ReccomendedNumberPerPage = 2;
+export const FilmCardsOnPage = {
+  MAIN: 5,
+  TOP_RATED: 2,
+  RECOMMENDED: 2
+};
+

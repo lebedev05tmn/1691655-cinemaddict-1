@@ -1,4 +1,4 @@
-import { FilmsNumberPerPage, ReccomendedNumberPerPage, TopRatedNumberPerPage } from '../../consts';
+import { FilmCardsOnPage } from '../../consts';
 
 const createFilmCard = () =>
   `<article class="film-card">
@@ -24,19 +24,11 @@ const createFilmCard = () =>
 export const createFilmCardsTemplate = () => {
   let filmsList = '';
   let topRatedFilmList = '';
-  let reccomendedFilmList = '';
+  let recommendedFilmList = '';
 
-  for (let i = FilmsNumberPerPage; i > 0; i--) {
-    filmsList += createFilmCard();
-  }
-
-  for (let i = TopRatedNumberPerPage; i > 0; i--) {
-    topRatedFilmList += createFilmCard();
-  }
-
-  for (let i = ReccomendedNumberPerPage; i > 0; i--) {
-    reccomendedFilmList += createFilmCard();
-  }
+  filmsList = Array.from({ length: FilmCardsOnPage.MAIN }, createFilmCard).join('');
+  topRatedFilmList = Array.from({ length: FilmCardsOnPage.TOP_RATED }, createFilmCard).join('');
+  recommendedFilmList = Array.from({ length: FilmCardsOnPage.RECOMMENDED}, createFilmCard).join('');
 
   return `<section class="films">
   <section class="films-list">
@@ -60,7 +52,7 @@ export const createFilmCardsTemplate = () => {
     <h2 class="films-list__title">Most commented</h2>
 
     <div class="films-list__container">
-      ${ reccomendedFilmList }
+      ${ recommendedFilmList }
     </div>
   </section>
 </section>`;
