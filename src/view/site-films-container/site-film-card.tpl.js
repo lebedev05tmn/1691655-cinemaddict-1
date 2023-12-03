@@ -1,6 +1,4 @@
-import { FilmCardsOnPage } from '../../consts';
-
-const createFilmCard = () =>
+export const createFilmCard = () =>
   `<article class="film-card">
     <a class="film-card__link">
       <h3 class="film-card__title">The Dance of Life</h3>
