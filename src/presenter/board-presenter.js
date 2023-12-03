@@ -1,12 +1,13 @@
-import { FilterType, SortType } from '../consts';
+import { FilmCardsOnPage, FilterType, SortType } from '../consts';
 import { render } from '../framework/render';
-import SiteFilmView from '../view/site-films-container/site-film-card-view';
+import SiteFilmListView from '../view/site-film-list/site-film-list-view';
+import SiteFilmContainerView from '../view/site-films-container/site-film-container-view';
 import SiteFiltersView from '../view/site-filters/site-filters-view';
 import SiteSortView from '../view/site-sort/site-sort-view';
 
 export default class BoardPresenter {
 
-  filmsContainerComponent = new
+  filmsContainerComponent = new SiteFilmContainerView();
 
   constructor(boardContainer, filmsModel) {
     this.boardContainer = boardContainer;
@@ -19,8 +20,12 @@ export default class BoardPresenter {
     render(new SiteFiltersView(FilterType.ALL), this.boardContainer);
     render(new SiteSortView(SortType.DEFAULT), this.boardContainer);
 
-    for (let i = 0; i < this.boardFilms.length; i++) {
-      render(new SiteFilmView({film: this.boardFilms[i]}), fil);
-    }
+    render(this.filmsContainerComponent, this.boardContainer);
+
+    const allFilmsList = this.boardFilms.slice(0, FilmCardsOnPage.ALL);
+    const filmListComponent = new SiteFilmListView(allFilmsList);
+    const filmsContainer = document.querySelector('.films');
+
+    render(filmListComponent, filmsContainer);
   }
 }

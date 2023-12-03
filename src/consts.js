@@ -12,7 +12,7 @@ export const FilterType = {
 };
 
 export const FilmCardsOnPage = {
-  MAIN: 5,
+  ALL: 5,
   TOP_RATED: 2,
   RECOMMENDED: 2
 };
