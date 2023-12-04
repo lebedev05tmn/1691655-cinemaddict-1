@@ -24,16 +24,16 @@ export const createFilmCard = (film) => {
 }
 
 
-export const createFilmListTemplate = (filmList) => {
+export const createFilmListTemplate = (filmList, isExtra) => {
   const filmsListComponent = filmList.map((film) => createFilmCard(film)).join('');
 
-  return `<section class="films-list">
+  return `<section class="films-list ${ isExtra ? 'films-list--extra' : ''}">
             <h2 class="films-list__title visually-hidden">All movies. Upcoming</h2>
 
             <div class="films-list__container">
               ${ filmsListComponent }
             </div>
 
-            <button class="films-list__show-more">Show more</button>
+            ${ isExtra ? '<button class="films-list__show-more">Show more</button>' : ''}
           </section>`;
 };

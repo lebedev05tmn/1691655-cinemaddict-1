@@ -22,10 +22,25 @@ export default class BoardPresenter {
 
     render(this.filmsContainerComponent, this.boardContainer);
 
-    const allFilmsList = this.boardFilms.slice(0, FilmCardsOnPage.ALL);
-    const filmListComponent = new SiteFilmListView(allFilmsList);
+    const allFilmsList = this.boardFilms
+      .slice(0, FilmCardsOnPage.ALL);
+    const topRatedList = this.boardFilms
+      .sort(() => Math.random - 0.5)
+      .sort((filmA, filmB) => filmB.film_info.total_rating - filmA.film_info.total_rating)
+      .slice(0, FilmCardsOnPage.TOP_RATED);
+    const recommendedFilmList = this.boardFilms
+      .sort(() => Math.random - 0.5)
+      .sort((filmA, filmB) => filmB.comments.length - filmA.comments.length)
+      .slice(0, FilmCardsOnPage.RECOMMENDED);
+
+    const allFilmListComponent = new SiteFilmListView(allFilmsList);
+    const topRatedListComponent = new SiteFilmListView(topRatedList, true);
+    const recommendedFilmListComponent = new SiteFilmListView(recommendedFilmList, true);
+
     const filmsContainer = document.querySelector('.films');
 
-    render(filmListComponent, filmsContainer);
+    render(allFilmListComponent, filmsContainer);
+    render(topRatedListComponent, filmsContainer);
+    render(recommendedFilmListComponent, filmsContainer);
   }
 }

@@ -3,13 +3,14 @@ import { createFilmListTemplate } from './site-film-card.tpl';
 
 export default class SiteFilmListView extends AbstractView {
 
-  constructor (filmList) {
+  constructor (filmList, isExtra = false) {
     super();
     this.filmList = filmList;
+    this.isExtra = isExtra;
   }
 
   get template () {
-    return createFilmListTemplate(this.filmList);
+    return createFilmListTemplate(this.filmList, this.isExtra);
   }
 
 }
