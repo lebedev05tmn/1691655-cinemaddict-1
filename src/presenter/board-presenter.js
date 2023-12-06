@@ -15,7 +15,9 @@ export default class BoardPresenter {
   }
 
   init () {
-    this.boardFilms = [...this.filmsModel.getFilms()];
+    console.log(this.filmsModel.films);
+
+    this.boardFilms = [...this.filmsModel.films];
 
     render(new SiteFiltersView(FilterType.ALL), this.boardContainer);
     render(new SiteSortView(SortType.DEFAULT), this.boardContainer);

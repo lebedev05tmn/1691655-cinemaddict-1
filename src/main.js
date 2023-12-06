@@ -14,6 +14,8 @@ const presenter = new BoardPresenter(mainContainer, filmsModel);
 const footer = new FooterPresenter(footerContainer);
 
 navigation.init();
-presenter.init();
+filmsModel.init().finally(() => {
+  presenter.init();
+});
 footer.init();
 
