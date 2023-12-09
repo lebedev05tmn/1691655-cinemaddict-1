@@ -21,19 +21,4 @@ export const createFilmCard = (film) => {
               <button class="film-card__controls-item film-card__controls-item--favorite" type="button">Mark as favorite</button>
             </div>
           </article>`;
-}
-
-
-export const createFilmListTemplate = (filmList, isExtra) => {
-  const filmsListComponent = filmList.map((film) => createFilmCard(film)).join('');
-
-  return `<section class="films-list ${ isExtra ? 'films-list--extra' : ''}">
-            <h2 class="films-list__title visually-hidden">All movies. Upcoming</h2>
-
-            <div class="films-list__container">
-              ${ filmsListComponent }
-            </div>
-
-            ${ isExtra ? '<button class="films-list__show-more">Show more</button>' : ''}
-          </section>`;
 };

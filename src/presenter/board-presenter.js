@@ -1,13 +1,17 @@
 import { FilmCardsOnPage, FilterType, SortType } from '../consts';
 import { render } from '../framework/render';
-import SiteFilmListView from '../view/site-film-list/site-film-list-view';
-import SiteFilmContainerView from '../view/site-films-container/site-film-container-view';
+import SiteFilmCardView from '../view/site-film-card/site-film-card-view';
+import SiteFilmListContainerView from '../view/site-film-list-container/site-film-list-container-view';
+import SiteFilmsListView from '../view/site-film-list/site-films-list-view';
+import SiteFilmsContainerView from '../view/site-films-container/site-films-container-view';
 import SiteFiltersView from '../view/site-filters/site-filters-view';
 import SiteSortView from '../view/site-sort/site-sort-view';
 
 export default class BoardPresenter {
 
-  filmsContainerComponent = new SiteFilmContainerView();
+  #filmsContainerComponent = new SiteFilmsContainerView();
+  #allFilmsContainer = new SiteFilmsListView();
+  #filmListContainerComponent = new SiteFilmListContainerView();
 
   constructor(boardContainer, filmsModel) {
     this.boardContainer = boardContainer;
@@ -15,34 +19,25 @@ export default class BoardPresenter {
   }
 
   init () {
-    console.log(this.filmsModel.films);
-
     this.boardFilms = [...this.filmsModel.films];
 
     render(new SiteFiltersView(FilterType.ALL), this.boardContainer);
     render(new SiteSortView(SortType.DEFAULT), this.boardContainer);
+    render(this.#filmsContainerComponent, this.boardContainer);
 
-    render(this.filmsContainerComponent, this.boardContainer);
+    this.#renderAllFilms();
+  }
 
-    const allFilmsList = this.boardFilms
-      .slice(0, FilmCardsOnPage.ALL);
-    const topRatedList = this.boardFilms
-      .sort(() => Math.random - 0.5)
-      .sort((filmA, filmB) => filmB.film_info.total_rating - filmA.film_info.total_rating)
-      .slice(0, FilmCardsOnPage.TOP_RATED);
-    const recommendedFilmList = this.boardFilms
-      .sort(() => Math.random - 0.5)
-      .sort((filmA, filmB) => filmB.comments.length - filmA.comments.length)
-      .slice(0, FilmCardsOnPage.RECOMMENDED);
+  #renderAllFilms () {
+    render(this.#allFilmsContainer, this.#filmsContainerComponent.element);
+    render(this.#filmListContainerComponent, this.#allFilmsContainer.element);
+    for (let i = 1; i < FilmCardsOnPage.ALL; i++) {
+      this.#renderFilm(this.boardFilms[i]);
+    }
+  }
 
-    const allFilmListComponent = new SiteFilmListView(allFilmsList);
-    const topRatedListComponent = new SiteFilmListView(topRatedList, true);
-    const recommendedFilmListComponent = new SiteFilmListView(recommendedFilmList, true);
-
-    const filmsContainer = document.querySelector('.films');
-
-    render(allFilmListComponent, filmsContainer);
-    render(topRatedListComponent, filmsContainer);
-    render(recommendedFilmListComponent, filmsContainer);
+  #renderFilm (film) {
+    const filmComponent = new SiteFilmCardView(film);
+    render(filmComponent, this.#filmListContainerComponent.element);
   }
 }
