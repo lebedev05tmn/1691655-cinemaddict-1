@@ -1,17 +1,19 @@
 import { AUTHORIZATION, END_POINT, FetchMethod } from '../consts';
 
-export default class FilmsModel {
-  #films = [];
+export default class CommentsModel {
+  #filmId = null;
+  #comments = [];
+
+  constructor (filmId) {
+    this.#filmId = filmId;
+  }
 
   init = async () => {
-    this.#films = await this.#load({url: 'movies'})
-      .then(
-        (res) => res.json()
-      );
+    this.#comments = await this.#load({url: `comments/${this.#filmId}`}).then((res)=>res.json());
   };
 
-  get films() {
-    return this.#films;
+  get comments() {
+    return this.#comments;
   }
 
   #load = async({

@@ -17,3 +17,14 @@ export const FilmCardsOnPage = {
   RECOMMENDED: 2
 };
 
+export const FetchMethod = {
+  GET: 'GET',
+  PUT: 'PUT',
+  POST: 'POST',
+  DELETE: 'DELETE',
+};
+
+export const END_POINT = 'https://20.ecmascript.pages.academy/cinemaddict/';
+export const AUTHORIZATION = 'Basic dmV0cm92Nzg6dmV0cm92Nzg=';
+
+
