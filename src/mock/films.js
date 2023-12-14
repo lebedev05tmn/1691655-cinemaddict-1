@@ -1416,7 +1416,7 @@ export const mockFilms = [
         'Animation',
         'Sci-Fi'
       ],
-      'description': 'Oscar-winning film, true masterpiece where love and death are closer to heroes than their family, from the creators of timeless classic \'Nu, Pogodi!\' and \'Alice in Wonderland\', a film about a journey that heroes are about to make in finding themselves, with the best fight scenes since Bruce Lee.'
+      'description': 'Oscar-winning film, true masterpice where love and death are closer to heroes than their family, from the creators of timeless classic \'Nu, Pogodi!\' and \'Alice in Wonderland\', a film about a journey that heroes are about to make in finding themselves, with the best fight scenes since Bruce Lee.'
     },
     'user_details': {
       'watchlist': false,
