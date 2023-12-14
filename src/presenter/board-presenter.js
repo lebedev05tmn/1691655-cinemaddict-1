@@ -1,5 +1,6 @@
 import { FilmCardsOnPage, FilterType, SortType } from '../consts';
 import { remove, render } from '../framework/render';
+import CommentsModel from '../model/comments-model';
 import SiteFilmCardView from '../view/site-film-card/site-film-card-view';
 import SiteFilmListContainerView from '../view/site-film-list-container/site-film-list-container-view';
 import SiteFilmsListView from '../view/site-film-list/site-films-list-view';
@@ -32,7 +33,7 @@ export default class BoardPresenter {
   #renderAllFilms () {
     render(this.#allFilmsContainer, this.#filmsContainerComponent.element);
     render(this.#filmListContainerComponent, this.#allFilmsContainer.element);
-    for (let i = 1; i < FilmCardsOnPage.ALL; i++) {
+    for (let i = 1; i <= FilmCardsOnPage.ALL; i++) {
       this.#renderFilm(this.boardFilms[i]);
     }
   }
@@ -49,13 +50,19 @@ export default class BoardPresenter {
     };
 
     function removePopup() {
+      document.body.style.removeProperty('overflow');
       remove(filmPopup);
     }
 
     function renderPopup() {
-      filmPopup = new SiteFilmPopupView(film);
+      const commentsModel = new CommentsModel(film.id);
+      commentsModel.init().finally(() => {
+        const comments = commentsModel.comments;
 
-      render(filmPopup, document.body);
+        filmPopup = new SiteFilmPopupView(film, comments);
+        filmPopup.setClosePopupHandler(removePopup);
+        render(filmPopup, document.body);
+      });
     }
 
     const filmComponent = new SiteFilmCardView({
@@ -63,6 +70,7 @@ export default class BoardPresenter {
       onFilmCardClick: () => {
         renderPopup();
         document.addEventListener('keydown', escKeyDownHandler);
+        document.body.style.overflow = 'hidden';
       }
     });
 
