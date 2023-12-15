@@ -5,12 +5,26 @@ export const SortType = {
 };
 
 export const FilterType = {
-  ALL: 'all',
-  WATCHLIST: 'watchlist',
-  HISTORY: 'history',
-  FAVORITES: 'favorites',
+  ALL: 'All movies',
+  WATCHLIST: 'Watchlist',
+  HISTORY: 'History',
+  FAVORITES: 'Favorites',
 };
 
-export const FilmsNumberPerPage = 5;
-export const TopRatedNumberPerPage = 2;
-export const ReccomendedNumberPerPage = 2;
+export const FilmCardsOnPage = {
+  ALL: 5,
+  TOP_RATED: 2,
+  RECOMMENDED: 2
+};
+
+export const FetchMethod = {
+  GET: 'GET',
+  PUT: 'PUT',
+  POST: 'POST',
+  DELETE: 'DELETE',
+};
+
+export const END_POINT = 'https://20.ecmascript.pages.academy/cinemaddict/';
+export const AUTHORIZATION = 'Basic dmV0cm92Nzg6dmV0cm92Nzg=';
+
+

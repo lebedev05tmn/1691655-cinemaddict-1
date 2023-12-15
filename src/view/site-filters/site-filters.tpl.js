@@ -5,16 +5,13 @@ const createFiltersItem = (filterType, currentFilter) =>
     href="#${filterType}"
     class="main-navigation__item ${filterType === currentFilter ? 'main-navigation__item--active' : ''}"
   >
-    All movies
+    ${filterType}
     ${filterType !== FilterType.ALL ? '<span class="main-navigation__item-count">13</span>' : ''}
   </a>`;
 
 export const createFiltersTemplate = (currentFilter) => {
-  let filters = '';
 
-  Object.keys(FilterType).forEach ((key) => {
-    filters += createFiltersItem(FilterType[key], currentFilter);
-  });
+  const filters = Object.values(FilterType).map((filter) => createFiltersItem(filter, currentFilter)).join('');
 
   return `<nav class="main-navigation">
             ${filters}
