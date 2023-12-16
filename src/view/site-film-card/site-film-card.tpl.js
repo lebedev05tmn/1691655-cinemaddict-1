@@ -2,7 +2,7 @@ export const createFilmCard = (film) => {
   const {title, total_rating: totalRating, duration, genre, description, poster} = film.film_info;
   const releaseYear = new Date(film.film_info.release.date).getFullYear();
 
-  return `<article class="film-card">
+  return `<article class="film-card" title="click to open popup">
             <a class="film-card__link">
               <h3 class="film-card__title">${title}</h3>
               <p class="film-card__rating">${totalRating}</p>

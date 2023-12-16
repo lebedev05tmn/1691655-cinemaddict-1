@@ -10,7 +10,7 @@ export default class SiteFilmCardView extends AbstractView {
     this.#film = film;
     this.#handleOpenPopup = onFilmCardClick;
 
-    this.element.addEventListener('click', this.#openPopupClickHandler);
+    this.element.querySelector('.film-card__link').addEventListener('click', this.#openPopupClickHandler);
   }
 
   get template () {

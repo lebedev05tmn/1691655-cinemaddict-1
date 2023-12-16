@@ -1,38 +1,22 @@
-import { AUTHORIZATION, END_POINT, FetchMethod } from '../consts';
-
 export default class CommentsModel {
+  #comments = null;
   #filmId = null;
-  #comments = [];
+  #apiService = null;
 
-  constructor (filmId) {
+  constructor(filmId, apiService) {
     this.#filmId = filmId;
+    this.#apiService = apiService;
   }
 
   init = async () => {
-    this.#comments = await this.#load({url: `comments/${this.#filmId}`}).then((res)=>res.json());
+    try {
+      this.#comments = await this.#apiService.getComments(this.#filmId);
+    } catch {
+      this.#comments = [];
+    }
   };
 
   get comments() {
     return this.#comments;
   }
-
-  #load = async({
-    url,
-    method = FetchMethod.GET,
-    body = null,
-    headers = new Headers(),
-  }) => {
-    headers.append('Authorization', AUTHORIZATION);
-
-    const response = await fetch(
-      `${END_POINT}${url}`,
-      {method, body, headers}
-    );
-
-    if (!response.ok) {
-      throw new Error(`${response.status}: ${response.statusText}`);
-    } else {
-      return response;
-    }
-  };
 }

@@ -2,15 +2,17 @@ import FilmsModel from './model/films-model';
 import BoardPresenter from './presenter/board-presenter';
 import FooterPresenter from './presenter/footer-presenter';
 import HeaderPresenter from './presenter/header-presenter';
+import ApiService from './services/api-service';
 
 const mainContainer = document.querySelector('.main');
 const headerContainer = document.querySelector('.header');
 const footerContainer = document.querySelector('.footer__statistics');
 
-const filmsModel = new FilmsModel();
+const apiService = new ApiService();
+const filmsModel = new FilmsModel(apiService);
 
 const navigation = new HeaderPresenter(headerContainer);
-const presenter = new BoardPresenter(mainContainer, filmsModel);
+const presenter = new BoardPresenter(mainContainer, filmsModel, apiService);
 const footer = new FooterPresenter(footerContainer);
 
 navigation.init();

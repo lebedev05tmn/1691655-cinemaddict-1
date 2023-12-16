@@ -10,19 +10,20 @@ import SiteFiltersView from '../view/site-filters/site-filters-view';
 import SiteSortView from '../view/site-sort/site-sort-view';
 
 export default class BoardPresenter {
+  #apiService = null;
 
   #filmsContainerComponent = new SiteFilmsContainerView();
   #allFilmsContainer = new SiteFilmsListView();
   #filmListContainerComponent = new SiteFilmListContainerView();
 
-  constructor(boardContainer, filmsModel) {
+  constructor(boardContainer, filmsModel, apiService) {
     this.boardContainer = boardContainer;
     this.filmsModel = filmsModel;
+    this.#apiService = apiService;
   }
 
   init () {
     this.boardFilms = [...this.filmsModel.films];
-
     render(new SiteFiltersView(FilterType.ALL), this.boardContainer);
     render(new SiteSortView(SortType.DEFAULT), this.boardContainer);
     render(this.#filmsContainerComponent, this.boardContainer);
@@ -50,12 +51,12 @@ export default class BoardPresenter {
     };
 
     function removePopup() {
-      document.body.style.removeProperty('overflow');
+      document.body.classList.remove('hide-overflow');
       remove(filmPopup);
     }
 
-    function renderPopup() {
-      const commentsModel = new CommentsModel(film.id);
+    const renderPopup = () => {
+      const commentsModel = new CommentsModel(film.id, this.#apiService);
       commentsModel.init().finally(() => {
         const comments = commentsModel.comments;
 
@@ -63,14 +64,14 @@ export default class BoardPresenter {
         filmPopup.setClosePopupHandler(removePopup);
         render(filmPopup, document.body);
       });
-    }
+    };
 
     const filmComponent = new SiteFilmCardView({
       film,
       onFilmCardClick: () => {
         renderPopup();
         document.addEventListener('keydown', escKeyDownHandler);
-        document.body.style.overflow = 'hidden';
+        document.body.classList.add('hide-overflow');
       }
     });
 
