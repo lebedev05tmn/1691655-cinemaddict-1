@@ -7,36 +7,52 @@ import SiteFilmsListView from '../view/site-film-list/site-films-list-view';
 import SiteFilmPopupView from '../view/site-film-popup/site-film-popup-view';
 import SiteFilmsContainerView from '../view/site-films-container/site-films-container-view';
 import SiteFiltersView from '../view/site-filters/site-filters-view';
+import ShowMoreButtonView from '../view/site-show-more-button/site-show-more-button-view';
 import SiteSortView from '../view/site-sort/site-sort-view';
 
 export default class BoardPresenter {
-  #apiService = null;
+  #boardContainer = null;
+  #showMoreButtonComponent = null;
+  #filmsModel = null;
+  #commentsModel = null;
+
+  #renderedFilmsNumber = FilmCardsOnPage.ALL_PER_STEP;
 
   #filmsContainerComponent = new SiteFilmsContainerView();
   #allFilmsContainer = new SiteFilmsListView();
   #filmListContainerComponent = new SiteFilmListContainerView();
 
-  constructor(boardContainer, filmsModel, apiService) {
-    this.boardContainer = boardContainer;
-    this.filmsModel = filmsModel;
-    this.#apiService = apiService;
+  constructor(boardContainer, filmsModel, commentsModel) {
+    this.#boardContainer = boardContainer;
+    this.#filmsModel = filmsModel;
+    this.#commentsModel = commentsModel;
+  }
+
+  get films() {
+    return this.#filmsModel.films;
   }
 
   init () {
-    this.boardFilms = [...this.filmsModel.films];
-    render(new SiteFiltersView(FilterType.ALL), this.boardContainer);
-    render(new SiteSortView(SortType.DEFAULT), this.boardContainer);
-    render(this.#filmsContainerComponent, this.boardContainer);
+    render(new SiteFiltersView(FilterType.ALL), this.#boardContainer);
+    render(new SiteSortView(SortType.DEFAULT), this.#boardContainer);
+    render(this.#filmsContainerComponent, this.#boardContainer);
 
-    this.#renderAllFilms();
+    this.#renderBoard();
   }
 
-  #renderAllFilms () {
+  #renderBoard () {
+    const films = this.films;
+    const filmsCount = films.length;
+
+    this.#renderFilms(films.slice(0, Math.min(filmsCount, this.#renderedFilmsNumber)));
+    this.#renderShowMoreButton();
+  }
+
+  #renderFilms (films) {
     render(this.#allFilmsContainer, this.#filmsContainerComponent.element);
     render(this.#filmListContainerComponent, this.#allFilmsContainer.element);
-    for (let i = 1; i <= FilmCardsOnPage.ALL; i++) {
-      this.#renderFilm(this.boardFilms[i]);
-    }
+
+    films.forEach((film) => this.#renderFilm(film));
   }
 
   #renderFilm (film) {
@@ -56,7 +72,7 @@ export default class BoardPresenter {
     }
 
     const renderPopup = () => {
-      const commentsModel = new CommentsModel(film.id, this.#apiService);
+      const commentsModel = new CommentsModel(film.id);
       commentsModel.init().finally(() => {
         const comments = commentsModel.comments;
 
@@ -77,4 +93,23 @@ export default class BoardPresenter {
 
     render(filmComponent, this.#filmListContainerComponent.element);
   }
+
+  #renderShowMoreButton () {
+    this.#showMoreButtonComponent = new ShowMoreButtonView({onClick: this.#handleShowMoreButtonClick});
+    render(this.#showMoreButtonComponent, this.#filmListContainerComponent.element);
+  }
+
+  #handleShowMoreButtonClick = () => {
+    const filmsNumber = this.films.length;
+    const newRenderedFilmsCount = Math.min(this.#renderedFilmsNumber + FilmCardsOnPage.ALL_PER_STEP, filmsNumber);
+    const films = this.films.slice(this.#renderedFilmsNumber, newRenderedFilmsCount);
+
+    remove(this.#showMoreButtonComponent);
+    this.#renderFilms(films);
+
+    this.#renderedFilmsNumber = newRenderedFilmsCount;
+    if (this.#renderedFilmsNumber < filmsNumber) {
+      this.#renderShowMoreButton();
+    }
+  };
 }
