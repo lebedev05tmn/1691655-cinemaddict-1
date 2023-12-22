@@ -14,11 +14,11 @@ const filmsModel = new FilmsModel(apiService);
 const commentsModel = new CommentsModel(apiService);
 
 const navigation = new HeaderPresenter(headerContainer);
-const presenter = new BoardPresenter({
+const presenter = new BoardPresenter(
   mainContainer,
   filmsModel,
-  commentsModel,
-});
+  commentsModel
+);
 const footer = new FooterPresenter(footerContainer);
 
 navigation.init();

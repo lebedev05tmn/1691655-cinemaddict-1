@@ -8,7 +8,6 @@ export default class ShowMoreButtonView extends AbstractView {
   constructor ({onClick}) {
     super();
     this.#handleClick = onClick;
-    console.log(onClick);
     this.element.addEventListener('click', this.#clickHandler);
   }
 
