@@ -10,6 +10,8 @@ import SiteSortView from '../view/site-sort/site-sort-view';
 import FilmPresenter from './film-presenter';
 
 export default class BoardPresenter {
+  #filmPresenters = new Map();
+
   #boardContainer = null;
   #filmsModel = null;
   #commentsModel = null;
@@ -77,9 +79,11 @@ export default class BoardPresenter {
   #renderFilm (film) {
     const filmPresenter = new FilmPresenter({
       filmListContainer: this.#filmListContainerComponent.element,
+      onClick: this.#handleClearPopups,
     });
 
     filmPresenter.init(film);
+    this.#filmPresenters.set(film.id, filmPresenter);
   }
 
   #renderShowMoreButton () {
@@ -99,5 +103,9 @@ export default class BoardPresenter {
     if (this.#renderedFilmsNumber < filmsNumber) {
       this.#renderShowMoreButton();
     }
+  };
+
+  #handleClearPopups = () => {
+    this.#filmPresenters.forEach((presenter) => presenter.removePopup());
   };
 }
