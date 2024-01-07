@@ -6,16 +6,18 @@ import SiteFilmPopupView from '../view/site-film-popup/site-film-popup-view';
 export default class FilmPresenter {
   #filmListContainer = null;
   #film = null;
-  #handleClick = null;
 
-  _filmPopup = null;
+  #changeData = null;
+  #removeOtherPopups = null;
 
-  constructor ({
-    filmListContainer,
-    onClick,
-  }) {
+  #filmComponent = null;
+
+  constructor ({ film, filmListContainer, onFilmCardClick, changeData }) {
     this.#filmListContainer = filmListContainer;
-    this.#handleClick = onClick;
+    this.#removeOtherPopups = onFilmCardClick;
+    this.#changeData = changeData;
+
+    this.init(film);
   }
 
   removePopup = () => {
@@ -29,35 +31,44 @@ export default class FilmPresenter {
   init(film) {
     this.#film = film;
 
-    const escKeyDownHandler = (evt) => {
-      if (evt.key === 'Escape') {
-        evt.preventDefault();
-        this.removePopup();
-        document.removeEventListener('keydown', escKeyDownHandler);
-      }
-    };
+    this.#filmComponent = new SiteFilmCardView(film);
 
-    const renderPopup = () => {
-      const commentsModel = new CommentsModel(film.id);
-      commentsModel.init().finally(() => {
-        const comments = commentsModel.comments;
+    this.#filmComponent.setPropertyClickHandler(this.#handleFilmPropertyClick);
+    this.#filmComponent.setFilmCardClickHandler(this.#handleFilmCardClick);
 
-        this._filmPopup = new SiteFilmPopupView(film, comments);
-        this._filmPopup.setClosePopupHandler(this.removePopup);
-        render(this._filmPopup, document.body);
-      });
-    };
-
-    const filmComponent = new SiteFilmCardView({
-      film,
-      onFilmCardClick: () => {
-        this.#handleClick();
-        renderPopup();
-        document.addEventListener('keydown', escKeyDownHandler);
-        document.body.classList.add('hide-overflow');
-      }
-    });
-
-    render(filmComponent, this.#filmListContainer);
+    render(this.#filmComponent, this.#filmListContainer);
   }
+
+  #handleFilmPropertyClick = (changingProperty) => {
+    this.#changeData(
+      {...this.#film, },
+      changingProperty
+    );
+  };
+
+  #escKeyDownHandler = (evt) => {
+    if (evt.key === 'Escape') {
+      evt.preventDefault();
+      this.removePopup();
+      document.removeEventListener('keydown', this.#escKeyDownHandler);
+    }
+  };
+
+  #renderPopup = () => {
+    const commentsModel = new CommentsModel(this.#film.id);
+    commentsModel.init().finally(() => {
+      const comments = commentsModel.comments;
+
+      this._filmPopup = new SiteFilmPopupView(this.#film, comments);
+      this._filmPopup.setClosePopupHandler(this.removePopup);
+      render(this._filmPopup, document.body);
+    });
+  };
+
+  #handleFilmCardClick = () => {
+    this.#removeOtherPopups();
+    this.#renderPopup();
+    document.addEventListener('keydown', this.#escKeyDownHandler);
+    document.body.classList.add('hide-overflow');
+  };
 }

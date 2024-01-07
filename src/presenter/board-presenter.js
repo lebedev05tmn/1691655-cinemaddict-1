@@ -78,11 +78,12 @@ export default class BoardPresenter {
 
   #renderFilm (film) {
     const filmPresenter = new FilmPresenter({
+      film: film,
       filmListContainer: this.#filmListContainerComponent.element,
-      onClick: this.#handleClearPopups,
+      onFilmCardClick: this.#handleFilmCardClick,
+      changeData: this.#handleViewAction,
     });
 
-    filmPresenter.init(film);
     this.#filmPresenters.set(film.id, filmPresenter);
   }
 
@@ -105,7 +106,11 @@ export default class BoardPresenter {
     }
   };
 
-  #handleClearPopups = () => {
+  #handleFilmCardClick = () => {
     this.#filmPresenters.forEach((presenter) => presenter.removePopup());
+  };
+
+  #handleViewAction = async (update, changingProperty) => {
+    console.log(update, changingProperty);
   };
 }

@@ -17,6 +17,12 @@ export const FilmCardsOnPage = {
   RECOMMENDED: 2
 };
 
+export const FilmProperty = {
+  FAVORITE: 'Favorites',
+  WATCHLIST: 'Watchlist',
+  WATCHED: 'Watched',
+};
+
 export const FetchMethod = {
   GET: 'GET',
   PUT: 'PUT',
