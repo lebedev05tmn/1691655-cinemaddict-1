@@ -25,4 +25,16 @@ export default class SiteFilmPopupView extends AbstractView {
     this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#closePopupHandler);
   };
 
+  #propertyClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.propertyChangeClick(evt.target, true);
+  };
+
+  setPropertyClickHandler = (callback) => {
+    this._callback.propertyChangeClick = callback;
+
+    this.element.querySelector('#watchlist').addEventListener('click', this.#propertyClickHandler);
+    this.element.querySelector('#watched').addEventListener('click', this.#propertyClickHandler);
+    this.element.querySelector('#favorite').addEventListener('click', this.#propertyClickHandler);
+  };
 }

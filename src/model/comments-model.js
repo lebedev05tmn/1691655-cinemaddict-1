@@ -11,7 +11,7 @@ export default class CommentsModel {
   init = async () => {
     try {
       this.#comments = await this.#apiService.getComments(this.#filmId);
-    } catch {
+    } catch(err) {
       this.#comments = [];
     }
   };

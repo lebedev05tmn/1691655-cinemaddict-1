@@ -1,4 +1,3 @@
-import { FilmProperty } from '../../consts';
 import AbstractView from '../../framework/view/abstract-view';
 import { createFilmCard } from './site-film-card.tpl';
 
@@ -24,9 +23,9 @@ export default class SiteFilmCardView extends AbstractView {
   setPropertyClickHandler = (callback) => {
     this._callback.propertyChangeClick = callback;
 
-    this.element.querySelector('.film-card__controls-item--favorite').addEventListener('click', this.#propertyClickHandler);
-    this.element.querySelector('.film-card__controls-item--add-to-watchlist').addEventListener('click', this.#propertyClickHandler);
-    this.element.querySelector('.film-card__controls-item--mark-as-watched').addEventListener('click', this.#propertyClickHandler);
+    this.element.querySelector('#favorite').addEventListener('click', this.#propertyClickHandler);
+    this.element.querySelector('#watchlist').addEventListener('click', this.#propertyClickHandler);
+    this.element.querySelector('#watched').addEventListener('click', this.#propertyClickHandler);
   };
 
   #openPopupClickHandler = (evt) => {

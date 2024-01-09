@@ -14,7 +14,7 @@ export default class BoardPresenter {
 
   #boardContainer = null;
   #filmsModel = null;
-  #commentsModel = null;
+  #apiService = null;
 
   #showMoreButtonComponent = null;
   #noFilmsComponent = null;
@@ -25,10 +25,10 @@ export default class BoardPresenter {
   #renderedFilmsNumber = FilmCardsOnPage.ALL_PER_STEP;
   #filterType = FilterType.ALL;
 
-  constructor(boardContainer, filmsModel, commentsModel) {
+  constructor(boardContainer, filmsModel, apiService) {
     this.#boardContainer = boardContainer;
     this.#filmsModel = filmsModel;
-    this.#commentsModel = commentsModel;
+    this.#apiService = apiService;
   }
 
   get films() {
@@ -37,6 +37,8 @@ export default class BoardPresenter {
 
   init () {
     this.#renderBoard();
+
+    this.#filmsModel.addObserver(this.#handleModelEvent);
   }
 
   #renderNoFilms () {
@@ -82,6 +84,7 @@ export default class BoardPresenter {
       filmListContainer: this.#filmListContainerComponent.element,
       onFilmCardClick: this.#handleFilmCardClick,
       changeData: this.#handleViewAction,
+      apiService: this.#apiService,
     });
 
     this.#filmPresenters.set(film.id, filmPresenter);
@@ -110,7 +113,11 @@ export default class BoardPresenter {
     this.#filmPresenters.forEach((presenter) => presenter.removePopup());
   };
 
-  #handleViewAction = async (update, changingProperty) => {
-    console.log(update, changingProperty);
+  #handleViewAction = async (update) => {
+    await this.#filmsModel.updateFilm(update);
+  };
+
+  #handleModelEvent = (data) => {
+    this.#filmPresenters.get(data.id).init(data);
   };
 }
