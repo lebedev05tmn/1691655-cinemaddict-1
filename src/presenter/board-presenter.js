@@ -1,20 +1,20 @@
 import { FilmCardsOnPage, FilterType, SortType } from '../consts';
 import { remove, render } from '../framework/render';
-import CommentsModel from '../model/comments-model';
-import SiteFilmCardView from '../view/site-film-card/site-film-card-view';
 import SiteFilmListContainerView from '../view/site-film-list-container/site-film-list-container-view';
 import SiteFilmsListView from '../view/site-film-list/site-films-list-view';
-import SiteFilmPopupView from '../view/site-film-popup/site-film-popup-view';
 import SiteFilmsContainerView from '../view/site-films-container/site-films-container-view';
 import SiteFiltersView from '../view/site-filters/site-filters-view';
 import NoFilmsTemplate from '../view/site-no-films/site-no-films-vies';
 import ShowMoreButtonView from '../view/site-show-more-button/site-show-more-button-view';
 import SiteSortView from '../view/site-sort/site-sort-view';
+import FilmPresenter from './film-presenter';
 
 export default class BoardPresenter {
+  #filmPresenters = new Map();
+
   #boardContainer = null;
   #filmsModel = null;
-  #commentsModel = null;
+  #apiService = null;
 
   #showMoreButtonComponent = null;
   #noFilmsComponent = null;
@@ -25,10 +25,10 @@ export default class BoardPresenter {
   #renderedFilmsNumber = FilmCardsOnPage.ALL_PER_STEP;
   #filterType = FilterType.ALL;
 
-  constructor(boardContainer, filmsModel, commentsModel) {
+  constructor(boardContainer, filmsModel, apiService) {
     this.#boardContainer = boardContainer;
     this.#filmsModel = filmsModel;
-    this.#commentsModel = commentsModel;
+    this.#apiService = apiService;
   }
 
   get films() {
@@ -37,6 +37,8 @@ export default class BoardPresenter {
 
   init () {
     this.#renderBoard();
+
+    this.#filmsModel.addObserver(this.#handleModelEvent);
   }
 
   #renderNoFilms () {
@@ -54,7 +56,6 @@ export default class BoardPresenter {
     render(this.#filmsContainerComponent, this.#boardContainer);
 
     const films = this.films;
-    // const films = [];
     const filmsCount = films.length;
 
     if (filmsCount === 0) {
@@ -78,42 +79,15 @@ export default class BoardPresenter {
   }
 
   #renderFilm (film) {
-    let filmPopup = null;
-
-    const escKeyDownHandler = (evt) => {
-      if (evt.key === 'Escape') {
-        evt.preventDefault();
-        removePopup();
-        document.removeEventListener('keydown', escKeyDownHandler);
-      }
-    };
-
-    function removePopup() {
-      document.body.classList.remove('hide-overflow');
-      remove(filmPopup);
-    }
-
-    const renderPopup = () => {
-      const commentsModel = new CommentsModel(film.id);
-      commentsModel.init().finally(() => {
-        const comments = commentsModel.comments;
-
-        filmPopup = new SiteFilmPopupView(film, comments);
-        filmPopup.setClosePopupHandler(removePopup);
-        render(filmPopup, document.body);
-      });
-    };
-
-    const filmComponent = new SiteFilmCardView({
-      film,
-      onFilmCardClick: () => {
-        renderPopup();
-        document.addEventListener('keydown', escKeyDownHandler);
-        document.body.classList.add('hide-overflow');
-      }
+    const filmPresenter = new FilmPresenter({
+      film: film,
+      filmListContainer: this.#filmListContainerComponent.element,
+      onFilmCardClick: this.#handleFilmCardClick,
+      changeData: this.#handleViewAction,
+      apiService: this.#apiService,
     });
 
-    render(filmComponent, this.#filmListContainerComponent.element);
+    this.#filmPresenters.set(film.id, filmPresenter);
   }
 
   #renderShowMoreButton () {
@@ -133,5 +107,17 @@ export default class BoardPresenter {
     if (this.#renderedFilmsNumber < filmsNumber) {
       this.#renderShowMoreButton();
     }
+  };
+
+  #handleFilmCardClick = () => {
+    this.#filmPresenters.forEach((presenter) => presenter.removePopup());
+  };
+
+  #handleViewAction = async (update) => {
+    await this.#filmsModel.updateFilm(update);
+  };
+
+  #handleModelEvent = (data) => {
+    this.#filmPresenters.get(data.id).init(data);
   };
 }
