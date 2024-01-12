@@ -44,7 +44,9 @@ export default class FilmPresenter {
     replace(this.#filmComponent, prevFilmComponent);
     remove(prevFilmComponent);
 
-    this.#renderPopup();
+    if (this.#popupComponent !== null) {
+      this.#renderPopup();
+    }
   }
 
   removePopup = () => {
@@ -55,19 +57,10 @@ export default class FilmPresenter {
     }
   };
 
-  #getFilmProperty = (eventTarget) => {
-    for (const { htmlId, serverProperty } of FilmPropertyRelation) {
-      if (htmlId === eventTarget.id) {
-        return serverProperty;
-      }
-    }
-  };
-
   #handleFilmPropertyClick = (changingPropertyTarget) => {
-    const changingProperty = this.#getFilmProperty(changingPropertyTarget);
+    const changingProperty = FilmPropertyRelation[changingPropertyTarget.id];
 
     this.#film.user_details[changingProperty] = !this.#film.user_details[changingProperty];
-
     this.#changeData(this.#film);
   };
 

@@ -17,20 +17,11 @@ export const FilmCardsOnPage = {
   RECOMMENDED: 2
 };
 
-export const FilmPropertyRelation = [
-  {
-    htmlId: 'favorite',
-    serverProperty: 'favorite',
-  },
-  {
-    htmlId: 'watchlist',
-    serverProperty: 'watchlist',
-  },
-  {
-    htmlId: 'watched',
-    serverProperty: 'already_watched',
-  },
-];
+export const FilmPropertyRelation = {
+  favorite: 'favorite',
+  watchlist: 'watchlist',
+  watched: 'already_watched',
+};
 
 export const FetchMethod = {
   GET: 'GET',
