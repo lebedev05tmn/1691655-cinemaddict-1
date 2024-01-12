@@ -1,5 +1,6 @@
 import { FilmCardsOnPage, FilterType, SortType } from '../consts';
 import { remove, render } from '../framework/render';
+import { filter } from '../utils/filter';
 import SiteFilmListContainerView from '../view/site-film-list-container/site-film-list-container-view';
 import SiteFilmsListView from '../view/site-film-list/site-films-list-view';
 import SiteFilmsContainerView from '../view/site-films-container/site-films-container-view';
@@ -24,6 +25,7 @@ export default class BoardPresenter {
 
   #renderedFilmsNumber = FilmCardsOnPage.ALL_PER_STEP;
   #filterType = FilterType.ALL;
+  #currentSortType = SortType.DEFAULT;
 
   constructor(boardContainer, filmsModel, apiService) {
     this.#boardContainer = boardContainer;
@@ -32,7 +34,15 @@ export default class BoardPresenter {
   }
 
   get films() {
-    return this.#filmsModel.films;
+    const films = this.#filmsModel.films;
+    const filteredFilms = filter[FilterType.ALL](films);
+
+    switch (this.#currentSortType) {
+      case SortType.RATING:
+        return filteredFilms.sort((a, b) => b.film_info.total_rating - a.film_info.total_rating);
+    }
+
+    return filteredFilms;
   }
 
   init () {
@@ -49,29 +59,32 @@ export default class BoardPresenter {
     render(this.#noFilmsComponent, this.#filmListContainerComponent.element);
   }
 
+  #renderSort () {
+    render(new SiteSortView(this.#currentSortType), this.#boardContainer);
+  }
+
   #renderBoard () {
     render(new SiteFiltersView(FilterType.ALL), this.#boardContainer);
-    render(new SiteSortView(SortType.DEFAULT), this.#boardContainer);
 
     render(this.#filmsContainerComponent, this.#boardContainer);
 
-    const films = this.films;
-    const filmsCount = films.length;
+    const filmsCount = this.films.length;
+    const isEmptyList = filmsCount === 0;
+    const filterType = this.#filterType;
 
-    if (filmsCount === 0) {
-      this.#allFilmsContainer = new SiteFilmsListView({title: FilterType.ALL, isEmptyList: true});
+    this.#allFilmsContainer = new SiteFilmsListView({ filterType, isEmptyList });
+
+    if (isEmptyList) {
       render(this.#allFilmsContainer, this.#filmsContainerComponent.element);
 
       return;
     }
 
-    this.#renderFilms(films.slice(0, Math.min(filmsCount, this.#renderedFilmsNumber)));
+    this.#renderFilms(this.films.slice(0, Math.min(filmsCount, this.#renderedFilmsNumber)));
     this.#renderShowMoreButton();
   }
 
   #renderFilms (films) {
-    this.#allFilmsContainer = new SiteFilmsListView();
-
     render(this.#filmListContainerComponent, this.#allFilmsContainer.element);
     render(this.#allFilmsContainer, this.#filmsContainerComponent.element);
 

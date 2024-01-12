@@ -10,7 +10,6 @@ export default class SiteSortView extends AbstractView {
   }
 
   get template() {
-
     return createSortTemplate(this.#currentSort);
   }
 }

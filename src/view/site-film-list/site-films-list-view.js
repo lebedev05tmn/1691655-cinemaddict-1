@@ -4,8 +4,8 @@ import { createFilmsListTemplate } from './site-films-list.tpl';
 export default class SiteFilmsListView extends AbstractView {
 
   constructor ({
-    title = 'All movies. Upcoming',
-    isEmptyList = false,
+    title,
+    isEmptyList,
     isExtra = false,
   } = {}) {
     super();
