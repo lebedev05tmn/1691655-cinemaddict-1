@@ -5,6 +5,7 @@ const createSortItemTemplate = (sortType, currentSort) =>
     <a
       href="#"
       class="sort__button ${sortType === currentSort ? 'sort__button--active' : ''}"
+      data-sort-type="${sortType}"
     >
       Sort by ${sortType}
     </a>
