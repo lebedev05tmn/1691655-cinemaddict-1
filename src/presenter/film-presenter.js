@@ -49,6 +49,10 @@ export default class FilmPresenter {
     }
   }
 
+  destroy = () => {
+    remove(this.#filmComponent);
+  };
+
   removePopup = () => {
     if (this.#popupComponent) {
       document.body.classList.remove('hide-overflow');
