@@ -1,8 +1,8 @@
 import dayjs from 'dayjs';
 
-export const sortTimeDown = (filmA, filmB) => {
-  const {date: dateA} = filmA.film_info.release;
-  const {date: dateB} = filmB.film_info.release;
+export const sortTimeDescending = (filmA, filmB) => {
+  const {date: dateA} = filmA.filmInfo.release;
+  const {date: dateB} = filmB.filmInfo.release;
   const durationInMinutesA = dayjs(dateA);
   const durationInMinutesB = dayjs(dateB);
 

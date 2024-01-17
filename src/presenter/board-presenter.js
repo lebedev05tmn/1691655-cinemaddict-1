@@ -1,6 +1,6 @@
 import { FilmCardsOnPage, FilterType, SortType } from '../consts';
 import { remove, render } from '../framework/render';
-import { sortTimeDown } from '../utils/utils';
+import { sortTimeDescending } from '../utils/utils';
 import SiteFilmListContainerView from '../view/site-film-list-container/site-film-list-container-view';
 import SiteFilmsListView from '../view/site-film-list/site-films-list-view';
 import SiteFilmsContainerView from '../view/site-films-container/site-films-container-view';
@@ -34,13 +34,13 @@ export default class BoardPresenter {
   }
 
   get films() {
-    const films = this.#filmsModel.films;
+    const films = Array.from(this.#filmsModel.films);
 
     switch (this.#sortType) {
       case SortType.RATING:
-        return films.sort((a, b) => b.film_info.total_rating - a.film_info.total_rating);
+        return films.sort((a, b) => b.filmInfo.totalRating - a.filmInfo.totalRating);
       case SortType.DATE:
-        return films.sort(sortTimeDown);
+        return films.sort(sortTimeDescending);
     }
     return films;
   }

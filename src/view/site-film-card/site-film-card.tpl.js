@@ -1,7 +1,7 @@
 export const createFilmCard = (film) => {
-  const { title, total_rating: totalRating, duration, genre, description, poster } = film.film_info;
-  const releaseYear = new Date(film.film_info.release.date).getFullYear();
-  const userDetails = film.user_details;
+  const { title, totalRating: totalRating, duration, genre, description, poster } = film.filmInfo;
+  const releaseYear = new Date(film.filmInfo.release.date).getFullYear();
+  const userDetails = film.userDetails;
 
   return `<article class="film-card" title="click to open popup">
             <a class="film-card__link">
@@ -32,7 +32,7 @@ export const createFilmCard = (film) => {
                 class="
                   film-card__controls-item
                   film-card__controls-item--mark-as-watched
-                  ${ userDetails.already_watched ? 'film-card__controls-item--active' : '' }
+                  ${ userDetails.alreadyWatched ? 'film-card__controls-item--active' : '' }
                 "
                 id="watched"
                 type="button"
