@@ -1,10 +1,10 @@
 import { FilmCardsOnPage, FilterType, SortType } from '../consts';
 import { remove, render } from '../framework/render';
+import { sortTimeDescending } from '../utils/utils';
 import SiteFilmListContainerView from '../view/site-film-list-container/site-film-list-container-view';
 import SiteFilmsListView from '../view/site-film-list/site-films-list-view';
 import SiteFilmsContainerView from '../view/site-films-container/site-films-container-view';
 import SiteFiltersView from '../view/site-filters/site-filters-view';
-import NoFilmsTemplate from '../view/site-no-films/site-no-films-vies';
 import ShowMoreButtonView from '../view/site-show-more-button/site-show-more-button-view';
 import SiteSortView from '../view/site-sort/site-sort-view';
 import FilmPresenter from './film-presenter';
@@ -13,17 +13,19 @@ export default class BoardPresenter {
   #filmPresenters = new Map();
 
   #boardContainer = null;
+  #allFilmsContainer = null;
+
   #filmsModel = null;
   #apiService = null;
 
+  #filtersComponent = null;
   #showMoreButtonComponent = null;
-  #noFilmsComponent = null;
-  #filmsContainerComponent = new SiteFilmsContainerView();
-  #allFilmsContainer = null;
+  #filmsContainerComponent = null;
+  #sortComponent = null;
   #filmListContainerComponent = new SiteFilmListContainerView();
 
   #renderedFilmsNumber = FilmCardsOnPage.ALL_PER_STEP;
-  #filterType = FilterType.ALL;
+  #sortType = SortType.DEFAULT;
 
   constructor(boardContainer, filmsModel, apiService) {
     this.#boardContainer = boardContainer;
@@ -32,7 +34,15 @@ export default class BoardPresenter {
   }
 
   get films() {
-    return this.#filmsModel.films;
+    const films = Array.from(this.#filmsModel.films);
+
+    switch (this.#sortType) {
+      case SortType.RATING:
+        return films.sort((a, b) => b.filmInfo.totalRating - a.filmInfo.totalRating);
+      case SortType.DATE:
+        return films.sort(sortTimeDescending);
+    }
+    return films;
   }
 
   init () {
@@ -41,39 +51,61 @@ export default class BoardPresenter {
     this.#filmsModel.addObserver(this.#handleModelEvent);
   }
 
-  #renderNoFilms () {
-    this.#noFilmsComponent = new NoFilmsTemplate({
-      filterType: this.#filterType,
-    });
+  #handleSortTypeChange = (sortType) => {
+    if (sortType === this.#sortType) {
+      return;
+    }
+    this.#sortType = sortType;
+    this.#clearBoard();
+    this.#renderBoard();
+  };
 
-    render(this.#noFilmsComponent, this.#filmListContainerComponent.element);
-  }
+  #renderSort = () => {
+    this.#sortComponent = new SiteSortView(this.#sortType);
+    this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
+    render(this.#sortComponent, this.#boardContainer);
+  };
 
   #renderBoard () {
-    render(new SiteFiltersView(FilterType.ALL), this.#boardContainer);
-    render(new SiteSortView(SortType.DEFAULT), this.#boardContainer);
+    const filmsCount = this.films.length;
+    this.#filtersComponent = new SiteFiltersView(FilterType.ALL);
 
-    render(this.#filmsContainerComponent, this.#boardContainer);
+    render(this.#filtersComponent, this.#boardContainer);
 
-    const films = this.films;
-    const filmsCount = films.length;
+    this.#allFilmsContainer = new SiteFilmsListView();
+    this.#filmsContainerComponent = new SiteFilmsContainerView();
 
     if (filmsCount === 0) {
-      this.#allFilmsContainer = new SiteFilmsListView({title: FilterType.ALL, isEmptyList: true});
+      render(this.#filmsContainerComponent, this.#boardContainer);
+
+      this.#allFilmsContainer.init({title: FilterType.ALL, isEmptyList: true});
       render(this.#allFilmsContainer, this.#filmsContainerComponent.element);
 
       return;
     }
 
-    this.#renderFilms(films.slice(0, Math.min(filmsCount, this.#renderedFilmsNumber)));
+    this.#renderSort();
+
+    render(this.#filmsContainerComponent, this.#boardContainer);
+
+    this.#renderFilms(this.films.slice(0, Math.min(filmsCount, this.#renderedFilmsNumber)));
     this.#renderShowMoreButton();
   }
 
-  #renderFilms (films) {
-    this.#allFilmsContainer = new SiteFilmsListView();
+  #clearBoard () {
+    this.#filmPresenters.forEach((presenter) => presenter.destroy());
+    this.#filmPresenters.clear();
 
-    render(this.#filmListContainerComponent, this.#allFilmsContainer.element);
+    remove(this.#filmsContainerComponent);
+    remove(this.#sortComponent);
+    remove(this.#filtersComponent);
+    remove(this.#showMoreButtonComponent);
+  }
+
+  #renderFilms (films) {
+    this.#allFilmsContainer.init();
     render(this.#allFilmsContainer, this.#filmsContainerComponent.element);
+    render(this.#filmListContainerComponent, this.#allFilmsContainer.element);
 
     films.forEach((film) => this.#renderFilm(film));
   }

@@ -1,3 +1,4 @@
+import camelcaseKeys from 'camelcase-keys';
 export default class FilmsModel {
   #films = [];
   #apiService = null;
@@ -7,9 +8,15 @@ export default class FilmsModel {
     this.#apiService = apiService;
   }
 
+  get films() {
+    return this.#films;
+  }
+
   init = async () => {
     try {
-      this.#films = await this.#apiService.films;
+      const films = await this.#apiService.films;
+
+      this.#films = films.map(this.#adaptToClient);
     } catch (err) {
       this.#films = [];
     }
@@ -45,7 +52,6 @@ export default class FilmsModel {
     this.#observers.forEach((observer) => observer(payload));
   }
 
-  get films() {
-    return this.#films;
-  }
+  #adaptToClient = (film) => camelcaseKeys(film, {deep: true});
+
 }
