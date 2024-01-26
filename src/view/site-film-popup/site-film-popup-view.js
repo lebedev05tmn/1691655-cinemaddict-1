@@ -1,7 +1,7 @@
-import AbstractView from '../../framework/view/abstract-view';
+import AbstractStatefulView from '../../framework/view/abstract-stateful-view';
 import { createFilmPopup } from './site-film-popup.tpl';
 
-export default class SiteFilmPopupView extends AbstractView {
+export default class SiteFilmPopupView extends AbstractStatefulView {
   #film = {};
   #comments = [];
 

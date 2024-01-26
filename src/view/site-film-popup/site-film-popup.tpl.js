@@ -2,6 +2,8 @@ import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 
 export const createFilmPopup = (film, comments) => {
+  console.log(film);
+
   const createCommentsList = () => {
     const commentsList = comments.map(
       (comment) => {
@@ -29,9 +31,9 @@ export const createFilmPopup = (film, comments) => {
             </ul>`;
   };
 
-  const { title, total_rating: rating, poster, age_rating: ageRating, director, writers, actors, release, duration: filmDuration, genre, description } = film.film_info;
+  const { title, totalRating, poster, ageRating, director, writers, actors, release, filmDuration, genre, description } = film.filmInfo;
   const releaseDate = dayjs(release.date).format('DD MMMM YYYY');
-  const userDetails = film.user_details;
+  const userDetails = film.userDetails;
   const genreList = genre.map((el) => `<span class="film-details__genre">${el}</span>`).join('');
 
   dayjs.extend(duration);
@@ -57,7 +59,7 @@ export const createFilmPopup = (film, comments) => {
                       </div>
 
                       <div class="film-details__rating">
-                        <p class="film-details__total-rating">${ rating }</p>
+                        <p class="film-details__total-rating">${ totalRating }</p>
                       </div>
                     </div>
 
@@ -84,7 +86,7 @@ export const createFilmPopup = (film, comments) => {
                       </tr>
                       <tr class="film-details__row">
                         <td class="film-details__term">Country</td>
-                        <td class="film-details__cell">${ release.release_country }</td>
+                        <td class="film-details__cell">${ release.releaseCountry }</td>
                       </tr>
                       <tr class="film-details__row">
                         <td class="film-details__term">Genres</td>
@@ -116,7 +118,7 @@ export const createFilmPopup = (film, comments) => {
                     class="
                       film-details__control-button
                       film-details__control-button--watched
-                      ${ userDetails.already_watched ? 'film-details__control-button--active' : '' }
+                      ${ userDetails.alreadyWatched ? 'film-details__control-button--active' : '' }
                     "
                     id="watched"
                     name="watched"
