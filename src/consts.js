@@ -20,7 +20,7 @@ export const FilmCardsOnPage = {
 export const FilmPropertyRelation = {
   favorite: 'favorite',
   watchlist: 'watchlist',
-  watched: 'already_watched',
+  watched: 'alreadyWatched',
 };
 
 export const FetchMethod = {
@@ -30,7 +30,7 @@ export const FetchMethod = {
   DELETE: 'DELETE',
 };
 
-export const END_POINT = 'https://20.ecmascript.pages.academy/cinemaddict/';
+export const END_POINT = 'https://20.objects.htmlacademy.pro/cinemaddict/';
 export const AUTHORIZATION = 'Basic dmV0cm92Nzg6dmV0cm92Nzg=';
 
 

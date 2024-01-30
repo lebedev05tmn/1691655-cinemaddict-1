@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "camelcase-keys": "9.1.3",
-    "dayjs": "1.11.10"
+    "dayjs": "1.11.10",
+    "snakecase-keys": "6.0.0"
   }
 }

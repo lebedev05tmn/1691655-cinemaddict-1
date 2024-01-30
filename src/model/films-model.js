@@ -1,4 +1,5 @@
 import camelcaseKeys from 'camelcase-keys';
+
 export default class FilmsModel {
   #films = [];
   #apiService = null;
@@ -30,15 +31,16 @@ export default class FilmsModel {
     }
 
     const updatedFilm = await this.#apiService.updateFilm(update);
+    const adaptedFilm = this.#adaptToClient(updatedFilm);
 
     try {
       this.#films = [
         ...this.#films.slice(0, index),
-        updatedFilm,
+        adaptedFilm,
         ...this.#films.slice(index + 1)
       ];
 
-      this._notify(updatedFilm);
+      this._notify(adaptedFilm);
     } catch (err) {
       throw new Error('Can\'t update film');
     }
@@ -53,5 +55,4 @@ export default class FilmsModel {
   }
 
   #adaptToClient = (film) => camelcaseKeys(film, {deep: true});
-
 }
