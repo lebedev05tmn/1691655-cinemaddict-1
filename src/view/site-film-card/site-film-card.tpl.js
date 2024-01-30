@@ -1,5 +1,5 @@
 export const createFilmCard = (film) => {
-  const { title, totalRating: totalRating, duration, genre, description, poster } = film.filmInfo;
+  const { title, totalRating, duration, genre, description, poster } = film.filmInfo;
   const releaseYear = new Date(film.filmInfo.release.date).getFullYear();
   const userDetails = film.userDetails;
 

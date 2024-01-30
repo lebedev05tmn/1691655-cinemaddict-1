@@ -64,7 +64,9 @@ export default class FilmPresenter {
   #handleFilmPropertyClick = (changingPropertyTarget) => {
     const changingProperty = FilmPropertyRelation[changingPropertyTarget.id];
 
-    this.#film.user_details[changingProperty] = !this.#film.user_details[changingProperty];
+    console.log(changingProperty);
+
+    this.#film.userDetails[changingProperty] = !this.#film.userDetails[changingProperty];
     this.#changeData(this.#film);
   };
 
