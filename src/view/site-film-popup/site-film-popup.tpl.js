@@ -29,7 +29,7 @@ export const createFilmPopup = (film, comments) => {
             </ul>`;
   };
 
-  const { title, totalRating, poster, ageRating, director, writers, actors, release, filmDuration, genre, description } = film.filmInfo;
+  const { title, totalRating, poster, ageRating, director, writers, actors, release, duration: filmDuration, genre, description } = film.filmInfo;
   const releaseDate = dayjs(release.date).format('DD MMMM YYYY');
   const userDetails = film.userDetails;
   const genreList = genre.map((el) => `<span class="film-details__genre">${el}</span>`).join('');

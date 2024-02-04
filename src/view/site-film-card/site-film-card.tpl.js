@@ -1,7 +1,12 @@
+import dayjs from 'dayjs';
+import duration from 'dayjs/plugin/duration';
+
 export const createFilmCard = (film) => {
-  const { title, totalRating, duration, genre, description, poster } = film.filmInfo;
+  const { title, totalRating, duration: filmDuration, genre, description, poster } = film.filmInfo;
   const releaseYear = new Date(film.filmInfo.release.date).getFullYear();
   const userDetails = film.userDetails;
+
+  dayjs.extend(duration);
 
   return `<article class="film-card" title="click to open popup">
             <a class="film-card__link">
@@ -9,7 +14,7 @@ export const createFilmCard = (film) => {
               <p class="film-card__rating">${ totalRating }</p>
               <p class="film-card__info">
                 <span class="film-card__year">${ releaseYear }</span>
-                <span class="film-card__duration">${ duration }</span>
+                <span class="film-card__duration">${ dayjs.duration(filmDuration, 'minutes').format('H[h] mm[m]') }</span>
                 <span class="film-card__genre">${ genre[0] }</span>
               </p>
               <img src="${ poster }" alt="" class="film-card__poster">
