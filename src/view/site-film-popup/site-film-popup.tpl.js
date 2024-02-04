@@ -2,19 +2,17 @@ import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 
 export const createFilmPopup = (film, comments) => {
-  console.log(film);
-
   const createCommentsList = () => {
     const commentsList = comments.map(
-      (comment) => {
-        const { author, comment: commentString, emotion, date } = comment;
+      (commentData) => {
+        const { author, comment, emotion, date } = commentData;
 
         return `<li class="film-details__comment">
                   <span class="film-details__comment-emoji">
                   <img src="./images/emoji/${ emotion }.png" width="55" height="55" alt="emoji-${ emotion }">
                 </span>
                 <div>
-                  <p class="film-details__comment-text">${ commentString }</p>
+                  <p class="film-details__comment-text">${ comment }</p>
                   <p class="film-details__comment-info">
                     <span class="film-details__comment-author">${ author }</span>
                     <span class="film-details__comment-day">${ dayjs(date).format('YYYY/MM/DD HH:mm') }</span>
