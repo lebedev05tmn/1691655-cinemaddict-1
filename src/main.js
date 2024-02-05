@@ -29,8 +29,8 @@ const boardPresenter = new BoardPresenter(
 const footer = new FooterPresenter(footerContainer);
 
 navigation.init();
-filterPresenter.init();
 filmsModel.init().finally(() => {
+  filterPresenter.init();
   boardPresenter.init();
 });
 footer.init();

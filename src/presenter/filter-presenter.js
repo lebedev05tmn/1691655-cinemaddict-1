@@ -3,30 +3,33 @@ import { render } from '../framework/render';
 import SiteFiltersView from '../view/site-filters/site-filters-view';
 import { filter } from '../utils/filter';
 
-const FilterStatus = {
-  WATCHLIST: true,
-  HISTORY: true,
-  FAVORITES: true,
+const FilteredFilmsCount = {
+  ALL: 0,
+  WATCHLIST: 0,
+  HISTORY: 0,
+  FAVORITES: 0,
 };
 
 export default class FilterPresenter {
   #container = null;
   #filterModel = null;
   #filmsModel = null;
-  #filterStatus = null;
+  #filteredFilmsCount = null;
 
   constructor (container, filterModel, filmsModel) {
     this.#container = container;
+
     this.#filterModel = filterModel;
-    this.#filterStatus = FilterStatus;
     this.#filmsModel = filmsModel;
+
+    this.#filteredFilmsCount = FilteredFilmsCount;
   }
 
   init = () => {
-    Object.keys(FilterStatus).map((key) => {
-      this.#filterStatus[key] = filter[FilterType[key]](this.#filmsModel.films).length > 0;
+    Object.keys(FilterType).map((key) => {
+      this.#filteredFilmsCount[key] = filter[FilterType[key]](this.#filmsModel.films).length;
     });
 
-    render(new SiteFiltersView(FilterType.ALL), this.#container);
+    render(new SiteFiltersView(this.#filterModel.filter, this.#filteredFilmsCount), this.#container);
   };
 }
