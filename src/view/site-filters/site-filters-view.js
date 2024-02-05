@@ -9,7 +9,6 @@ export default class SiteFiltersView extends AbstractView {
   }
 
   get template () {
-
     return createFiltersTemplate(this.filter);
   }
 }

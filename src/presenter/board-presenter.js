@@ -68,9 +68,6 @@ export default class BoardPresenter {
 
   #renderBoard () {
     const filmsCount = this.films.length;
-    this.#filtersComponent = new SiteFiltersView(FilterType.ALL);
-
-    render(this.#filtersComponent, this.#boardContainer);
 
     this.#allFilmsContainer = new SiteFilmsListView();
     this.#filmsContainerComponent = new SiteFilmsContainerView();
