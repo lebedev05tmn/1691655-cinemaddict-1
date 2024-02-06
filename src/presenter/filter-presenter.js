@@ -12,12 +12,15 @@ const FilteredFilmsCount = {
 
 export default class FilterPresenter {
   #container = null;
+  #filterComponent = null;
+
   #filterModel = null;
   #filmsModel = null;
   #filteredFilmsCount = null;
 
   constructor (container, filterModel, filmsModel) {
     this.#container = container;
+    this.#filterComponent = null;
 
     this.#filterModel = filterModel;
     this.#filmsModel = filmsModel;
@@ -30,6 +33,16 @@ export default class FilterPresenter {
       this.#filteredFilmsCount[key] = filter[FilterType[key]](this.#filmsModel.films).length;
     });
 
-    render(new SiteFiltersView(this.#filterModel.filter, this.#filteredFilmsCount), this.#container);
+    this.#filterComponent = new SiteFiltersView(this.#filterModel.filter, this.#filteredFilmsCount);
+    this.#filterComponent.setFilterTypeChangeHandler(this.#handleFilterTypeChange);
+
+    render(this.#filterComponent, this.#container);
+  };
+
+  #handleFilterTypeChange = (filterType) => {
+    if (this.#filterModel.filter === filterType.id) {
+      return;
+    }
+    this.#filterModel.setFilter(filterType.id);
   };
 }

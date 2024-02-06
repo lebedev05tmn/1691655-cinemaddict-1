@@ -1,10 +1,11 @@
-import { FilmCardsOnPage, FilterType, SortType } from '../consts';
+import { FilmCardsOnPage, FilterType, SortType, UpdateType } from '../consts';
 import { remove, render } from '../framework/render';
+import { filter } from '../utils/filter';
 import { sortTimeDescending } from '../utils/utils';
 import SiteFilmListContainerView from '../view/site-film-list-container/site-film-list-container-view';
 import SiteFilmsListView from '../view/site-film-list/site-films-list-view';
 import SiteFilmsContainerView from '../view/site-films-container/site-films-container-view';
-import SiteFiltersView from '../view/site-filters/site-filters-view';
+import SiteFilmsLoadingView from '../view/site-films-loading/site-films-loading-view';
 import ShowMoreButtonView from '../view/site-show-more-button/site-show-more-button-view';
 import SiteSortView from '../view/site-sort/site-sort-view';
 import FilmPresenter from './film-presenter';
@@ -13,42 +14,51 @@ export default class BoardPresenter {
   #filmPresenters = new Map();
 
   #boardContainer = null;
-  #allFilmsContainer = null;
 
   #filmsModel = null;
+  #filterModel = null;
   #apiService = null;
 
   #filtersComponent = null;
   #showMoreButtonComponent = null;
-  #filmsContainerComponent = null;
   #sortComponent = null;
+
   #filmListContainerComponent = new SiteFilmListContainerView();
+  #filmsLoadingComponent = new SiteFilmsLoadingView();
+  #allFilmsContainer = new SiteFilmsListView();
+  #filmsContainerComponent = new SiteFilmsContainerView();
 
   #renderedFilmsNumber = FilmCardsOnPage.ALL_PER_STEP;
   #sortType = SortType.DEFAULT;
 
-  constructor(boardContainer, filmsModel, apiService) {
+  #isLoading = true;
+
+  constructor(boardContainer, filmsModel, filterModel, apiService) {
     this.#boardContainer = boardContainer;
     this.#filmsModel = filmsModel;
+    this.#filterModel = filterModel;
     this.#apiService = apiService;
   }
 
   get films() {
+    const filterType = this.#filterModel.filter;
     const films = Array.from(this.#filmsModel.films);
+    const filteredFilms = filter[filterType](films);
 
     switch (this.#sortType) {
       case SortType.RATING:
-        return films.sort((a, b) => b.filmInfo.totalRating - a.filmInfo.totalRating);
+        return filteredFilms.sort((a, b) => b.filmInfo.totalRating - a.filmInfo.totalRating);
       case SortType.DATE:
-        return films.sort(sortTimeDescending);
+        return filteredFilms.sort(sortTimeDescending);
     }
-    return films;
+    return filteredFilms;
   }
 
   init () {
-    this.#renderBoard();
-
     this.#filmsModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
+
+    this.#renderBoard();
   }
 
   #handleSortTypeChange = (sortType) => {
@@ -60,6 +70,10 @@ export default class BoardPresenter {
     this.#renderBoard();
   };
 
+  #renderLoading = () => {
+    render(this.#filmsLoadingComponent, this.#filmListContainerComponent.element);
+  };
+
   #renderSort = () => {
     this.#sortComponent = new SiteSortView(this.#sortType);
     this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
@@ -67,14 +81,18 @@ export default class BoardPresenter {
   };
 
   #renderBoard () {
+    render(this.#filmsContainerComponent, this.#boardContainer);
+    render(this.#filmListContainerComponent, this.#filmsContainerComponent.element);
+
+    if (this.#isLoading) {
+      this.#renderLoading();
+
+      return;
+    }
+
     const filmsCount = this.films.length;
 
-    this.#allFilmsContainer = new SiteFilmsListView();
-    this.#filmsContainerComponent = new SiteFilmsContainerView();
-
     if (filmsCount === 0) {
-      render(this.#filmsContainerComponent, this.#boardContainer);
-
       this.#allFilmsContainer.init({title: FilterType.ALL, isEmptyList: true});
       render(this.#allFilmsContainer, this.#filmsContainerComponent.element);
 
@@ -146,7 +164,23 @@ export default class BoardPresenter {
     await this.#filmsModel.updateFilm(update);
   };
 
-  #handleModelEvent = (data) => {
-    this.#filmPresenters.get(data.id).init(data);
+  #handleModelEvent = (updateType, data) => {
+    console.log('board-presenter ', updateType);
+
+    switch (updateType) {
+      case UpdateType.PATCH:
+        this.#filmPresenters.get(data.id).init(data);
+        break;
+      case UpdateType.MINOR:
+        this.#clearBoard();
+        this.#renderBoard();
+        break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#filmsLoadingComponent);
+        this.#renderBoard();
+        break;
+    }
   };
+
 }

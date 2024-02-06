@@ -11,6 +11,13 @@ export const FilterType = {
   FAVORITES: 'Favorites',
 };
 
+export const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
+  INIT: 'INIT',
+};
+
 export const FilmCardsOnPage = {
   ALL_PER_STEP: 5,
   TOP_RATED: 2,

@@ -24,14 +24,19 @@ const filterPresenter = new FilterPresenter(
 const boardPresenter = new BoardPresenter(
   mainContainer,
   filmsModel,
+  filterModel,
   apiService
 );
 const footer = new FooterPresenter(footerContainer);
 
+filterPresenter.init();
+boardPresenter.init();
 navigation.init();
+
 filmsModel.init().finally(() => {
-  filterPresenter.init();
-  boardPresenter.init();
+  // filterPresenter.init();
+  // boardPresenter.init();
 });
+
 footer.init();
 

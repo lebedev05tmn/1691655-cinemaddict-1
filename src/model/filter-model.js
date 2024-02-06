@@ -1,4 +1,4 @@
-import { FilterType } from '../consts';
+import { FilterType, UpdateType } from '../consts';
 import Observable from '../framework/observable';
 
 
@@ -15,8 +15,8 @@ export default class FilterModel extends Observable {
     return this.#filter;
   }
 
-  set filter(filter) {
+  setFilter(filter) {
     this.#filter = filter;
-    this._notify(filter);
+    this._notify(UpdateType.MINOR, filter);
   }
 }

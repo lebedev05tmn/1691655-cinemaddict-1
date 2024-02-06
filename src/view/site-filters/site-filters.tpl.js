@@ -4,6 +4,7 @@ const createFiltersItem = (filterType, currentFilter, filmsCount) =>
   `<a
     href="#${filterType}"
     class="main-navigation__item ${filterType === currentFilter ? 'main-navigation__item--active' : ''}"
+    id="${filterType}"
   >
     ${filterType}
     ${filterType !== FilterType.ALL ? `<span class="main-navigation__item-count">${filmsCount}</span>` : ''}
