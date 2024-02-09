@@ -1,5 +1,5 @@
 import { FilterType } from '../consts';
-import { render } from '../framework/render';
+import { RenderPosition, remove, render } from '../framework/render';
 import SiteFiltersView from '../view/site-filters/site-filters-view';
 import { filter } from '../utils/filter';
 
@@ -36,7 +36,11 @@ export default class FilterPresenter {
     this.#filterComponent = new SiteFiltersView(this.#filterModel.filter, this.#filteredFilmsCount);
     this.#filterComponent.setFilterTypeChangeHandler(this.#handleFilterTypeChange);
 
-    render(this.#filterComponent, this.#container);
+    render(this.#filterComponent, this.#container, RenderPosition.AFTERBEGIN);
+  };
+
+  destroy = () => {
+    remove(this.#filterComponent);
   };
 
   #handleFilterTypeChange = (filterType) => {

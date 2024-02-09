@@ -1,8 +1,6 @@
-import { render } from './framework/render';
 import FilmsModel from './model/films-model';
 import FilterModel from './model/filter-model';
 import BoardPresenter from './presenter/board-presenter';
-import FilterPresenter from './presenter/filter-presenter';
 import FooterPresenter from './presenter/footer-presenter';
 import HeaderPresenter from './presenter/header-presenter';
 import ApiService from './services/api-service';
@@ -16,11 +14,7 @@ const filmsModel = new FilmsModel(apiService);
 const filterModel = new FilterModel();
 
 const navigation = new HeaderPresenter(headerContainer);
-const filterPresenter = new FilterPresenter(
-  mainContainer,
-  filterModel,
-  filmsModel
-);
+
 const boardPresenter = new BoardPresenter(
   mainContainer,
   filmsModel,
@@ -29,7 +23,6 @@ const boardPresenter = new BoardPresenter(
 );
 const footer = new FooterPresenter(footerContainer);
 
-filterPresenter.init();
 boardPresenter.init();
 navigation.init();
 
