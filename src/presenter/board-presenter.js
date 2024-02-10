@@ -1,4 +1,4 @@
-import { FilmCardsOnPage, FilterType, SortType, UpdateType } from '../consts';
+import { FilmCardsOnPage, FilterType, SortType, UpdateType, UserAction } from '../consts';
 import { remove, render } from '../framework/render';
 import { filter } from '../utils/filter';
 import { sortTimeDescending } from '../utils/utils';
@@ -15,12 +15,12 @@ export default class BoardPresenter {
   #filmPresenters = new Map();
   #filterPresenter = null;
 
-  #boardContainer = null;
-
   #filmsModel = null;
   #filterModel = null;
   #apiService = null;
+  #commentsModel = null;
 
+  #boardContainer = null;
   #filtersComponent = null;
   #showMoreButtonComponent = null;
   #sortComponent = null;
@@ -35,11 +35,12 @@ export default class BoardPresenter {
 
   #isLoading = true;
 
-  constructor(boardContainer, filmsModel, filterModel, apiService) {
+  constructor(boardContainer, filmsModel, filterModel, apiService, commentsModel) {
     this.#boardContainer = boardContainer;
     this.#filmsModel = filmsModel;
     this.#filterModel = filterModel;
     this.#apiService = apiService;
+    this.#commentsModel = commentsModel;
 
     this.#filterPresenter = new FilterPresenter(
       boardContainer,
@@ -151,6 +152,7 @@ export default class BoardPresenter {
       onFilmCardClick: this.#handleFilmCardClick,
       changeData: this.#handleViewAction,
       apiService: this.#apiService,
+      commentsModel: this.#commentsModel,
     });
 
     this.#filmPresenters.set(film.id, filmPresenter);

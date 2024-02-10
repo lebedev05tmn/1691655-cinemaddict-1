@@ -1,3 +1,4 @@
+import CommentsModel from './model/comments-model';
 import FilmsModel from './model/films-model';
 import FilterModel from './model/filter-model';
 import BoardPresenter from './presenter/board-presenter';
@@ -12,6 +13,7 @@ const footerContainer = document.querySelector('.footer__statistics');
 const apiService = new ApiService();
 const filmsModel = new FilmsModel(apiService);
 const filterModel = new FilterModel();
+const commentsModel = new CommentsModel();
 
 const navigation = new HeaderPresenter(headerContainer);
 
@@ -19,7 +21,8 @@ const boardPresenter = new BoardPresenter(
   mainContainer,
   filmsModel,
   filterModel,
-  apiService
+  apiService,
+  commentsModel
 );
 const footer = new FooterPresenter(footerContainer);
 

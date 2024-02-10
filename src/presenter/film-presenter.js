@@ -1,10 +1,12 @@
-import { FilmPropertyRelation } from '../consts';
+import { FilmPropertyRelation, UserAction } from '../consts';
 import { remove, render, replace } from '../framework/render';
 import CommentsModel from '../model/comments-model';
 import SiteFilmCardView from '../view/site-film-card/site-film-card-view';
 import SiteFilmPopupView from '../view/site-film-popup/site-film-popup-view';
 
 export default class FilmPresenter {
+  #commentsModel = null;
+
   #filmListContainer = null;
   #film = null;
   #comments = [];
@@ -17,11 +19,12 @@ export default class FilmPresenter {
 
   #apiService = null;
 
-  constructor ({ film, filmListContainer, onFilmCardClick, changeData, apiService }) {
+  constructor ({ film, filmListContainer, onFilmCardClick, changeData, apiService, commentsModel }) {
     this.#filmListContainer = filmListContainer;
     this.#removeOtherPopups = onFilmCardClick;
     this.#changeData = changeData;
     this.#apiService = apiService;
+    this.#commentsModel = commentsModel;
 
     this.init(film);
   }
@@ -101,6 +104,7 @@ export default class FilmPresenter {
   #handleFilmCardClick = async () => {
     this.#removeOtherPopups();
     await this.#getComments();
+
     this.#renderPopup();
     document.addEventListener('keydown', this.#escKeyDownHandler);
     document.body.classList.add('hide-overflow');

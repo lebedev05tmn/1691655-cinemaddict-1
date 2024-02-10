@@ -18,6 +18,19 @@ export const UpdateType = {
   INIT: 'INIT',
 };
 
+export const CommentReactions = {
+  SMILE: './images/emoji/smile.png',
+  SLEEPING: './images/emoji/sleeping.png',
+  PUKE: './images/emoji/puke.png',
+  ANGRY: './images/emoji/angry.png',
+};
+
+export const UserAction = {
+  UPDATE_FILM: 'UPDATE_FILM',
+  ADD_COMMENT: 'ADD_COMMENT',
+  DELETE_COMMENT: 'DELETE_COMMENT',
+};
+
 export const FilmCardsOnPage = {
   ALL_PER_STEP: 5,
   TOP_RATED: 2,
