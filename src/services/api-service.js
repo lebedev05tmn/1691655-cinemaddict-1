@@ -29,11 +29,23 @@ export default class ApiService {
   };
 
   updateFilm = async (film) => {
-
     const response = await this.#load({
       url: `movies/${film.id}`,
       method: FetchMethod.PUT,
       body: JSON.stringify(this.#adaptToServer(film)),
+      headers: new Headers({'Content-Type': 'application/json'}),
+    });
+
+    const parsedResponse = ApiService.parseResponse(response);
+
+    return parsedResponse;
+  };
+
+  updateComment = async (update) => {
+    const response = await this.#load({
+      url: `comments/${update.filmId}`,
+      method: FetchMethod.POST,
+      body: JSON.stringify(this.#adaptToServer(update.newComment)),
       headers: new Headers({'Content-Type': 'application/json'}),
     });
 

@@ -48,17 +48,29 @@ export default class SiteFilmPopupView extends AbstractStatefulView {
     this.element.querySelector('#favorite').addEventListener('click', this.#propertyClickHandler);
   };
 
-  #saveCommentHandler = (evt) => {
+  #commentSaveHandler = (evt) => {
     if (evt.keyCode === 13 && evt.ctrlKey) {
-      console.log('pressed');
+      evt.preventDefault();
+      if (this._state.comment.length !== 0 && this._state.emotion) {
+        this._callback.saveCommentClick({
+          filmId: this.#film.id,
+          newComment: this._state,
+        });
+        this._callback.closeClick();
+      } else {
+        // console.log('Input comment and emotion');
+      }
     }
+  };
+
+  setSaveCommentHandler = (callback) => {
+    this._callback.saveCommentClick = callback;
+    document.addEventListener('keydown', this.#commentSaveHandler);
   };
 
   #setInnerHandlers = () => {
     this.element.querySelector('.film-details__comment-input').addEventListener('input', this.#changeCommentText);
     this.element.querySelector('.film-details__emoji-list').addEventListener('click', this.#clickEmojiLabel);
-    document.addEventListener('keydown', this.#saveCommentHandler);
-
   };
 
   #changeCommentText = (evt) => {
@@ -93,7 +105,5 @@ export default class SiteFilmPopupView extends AbstractStatefulView {
         )
         .toLowerCase(),
     });
-
-    console.log(this._state);
   };
 }

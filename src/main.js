@@ -13,7 +13,7 @@ const footerContainer = document.querySelector('.footer__statistics');
 const apiService = new ApiService();
 const filmsModel = new FilmsModel(apiService);
 const filterModel = new FilterModel();
-const commentsModel = new CommentsModel();
+const commentsModel = new CommentsModel(apiService);
 
 const navigation = new HeaderPresenter(headerContainer);
 

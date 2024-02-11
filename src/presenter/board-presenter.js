@@ -1,4 +1,4 @@
-import { FilmCardsOnPage, FilterType, SortType, UpdateType, UserAction } from '../consts';
+import { FilmCardsOnPage, SortType, UpdateType, ViewActions } from '../consts';
 import { remove, render } from '../framework/render';
 import { filter } from '../utils/filter';
 import { sortTimeDescending } from '../utils/utils';
@@ -66,6 +66,7 @@ export default class BoardPresenter {
   init () {
     this.#filmsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
+    this.#commentsModel.addObserver(this.#handleModelEvent);
 
     this.#renderBoard();
   }
@@ -177,15 +178,23 @@ export default class BoardPresenter {
     this.#filmPresenters.forEach((presenter) => presenter.removePopup());
   };
 
-  #handleViewAction = async (update) => {
-    await this.#filmsModel.updateFilm(update);
+  #handleViewAction = async (updateType, update) => {
+    switch (updateType) {
+      case ViewActions.FILM:
+        await this.#filmsModel.updateFilm(update);
+        break;
+      case ViewActions.UPDATE_COMMENT:
+        // console.log('comment update... ', update);
+        await this.#commentsModel.updateComment(update);
+        break;
+    }
   };
 
   #handleModelEvent = (updateType, data) => {
-    console.log('board-presenter ', updateType);
+    // console.log('board-presenter ', updateType);
 
     switch (updateType) {
-      case UpdateType.PATCH:
+      case UpdateType.MAJOR:
         this.#filterPresenter.destroy();
         this.#filterPresenter.init();
         this.#filmPresenters.get(data.id).init(data);

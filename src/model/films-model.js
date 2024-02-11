@@ -45,7 +45,7 @@ export default class FilmsModel extends Observable {
         ...this.#films.slice(index + 1)
       ];
 
-      this._notify(UpdateType.PATCH, adaptedFilm);
+      this._notify(UpdateType.MAJOR, adaptedFilm);
     } catch (err) {
       throw new Error('Can\'t update film');
     }

@@ -18,6 +18,12 @@ export const UpdateType = {
   INIT: 'INIT',
 };
 
+export const ViewActions = {
+  FILM: 'FILM',
+  UPDATE_COMMENT: 'UPDATE',
+  DELETE_COMMENT: 'DELETE',
+};
+
 export const CommentReactions = {
   SMILE: './images/emoji/smile.png',
   SLEEPING: './images/emoji/sleeping.png',
