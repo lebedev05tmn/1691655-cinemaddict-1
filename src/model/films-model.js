@@ -1,10 +1,14 @@
 import camelcaseKeys from 'camelcase-keys';
-export default class FilmsModel {
+import { UpdateType } from '../consts';
+import Observable from '../framework/observable';
+
+export default class FilmsModel extends Observable {
   #films = [];
   #apiService = null;
   #observers = new Set();
 
   constructor (apiService) {
+    super();
     this.#apiService = apiService;
   }
 
@@ -20,6 +24,8 @@ export default class FilmsModel {
     } catch (err) {
       this.#films = [];
     }
+
+    this._notify(UpdateType.INIT);
   };
 
   updateFilm = async (update) => {
@@ -30,28 +36,20 @@ export default class FilmsModel {
     }
 
     const updatedFilm = await this.#apiService.updateFilm(update);
+    const adaptedFilm = this.#adaptToClient(updatedFilm);
 
     try {
       this.#films = [
         ...this.#films.slice(0, index),
-        updatedFilm,
+        adaptedFilm,
         ...this.#films.slice(index + 1)
       ];
 
-      this._notify(updatedFilm);
+      this._notify(UpdateType.MAJOR, adaptedFilm);
     } catch (err) {
       throw new Error('Can\'t update film');
     }
   };
 
-  addObserver = (observer) => {
-    this.#observers.add(observer);
-  };
-
-  _notify(payload) {
-    this.#observers.forEach((observer) => observer(payload));
-  }
-
   #adaptToClient = (film) => camelcaseKeys(film, {deep: true});
-
 }

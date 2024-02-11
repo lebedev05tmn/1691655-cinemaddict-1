@@ -1,15 +1,20 @@
+import dayjs from 'dayjs';
+import duration from 'dayjs/plugin/duration';
+
 export const createFilmCard = (film) => {
-  const { title, totalRating: totalRating, duration, genre, description, poster } = film.filmInfo;
+  const { title, totalRating, duration: filmDuration, genre, description, poster } = film.filmInfo;
   const releaseYear = new Date(film.filmInfo.release.date).getFullYear();
   const userDetails = film.userDetails;
 
-  return `<article class="film-card" title="click to open popup">
+  dayjs.extend(duration);
+
+  return `<article class="film-card">
             <a class="film-card__link">
               <h3 class="film-card__title">${ title }</h3>
               <p class="film-card__rating">${ totalRating }</p>
               <p class="film-card__info">
                 <span class="film-card__year">${ releaseYear }</span>
-                <span class="film-card__duration">${ duration }</span>
+                <span class="film-card__duration">${ dayjs.duration(filmDuration, 'minutes').format('H[h] mm[m]') }</span>
                 <span class="film-card__genre">${ genre[0] }</span>
               </p>
               <img src="${ poster }" alt="" class="film-card__poster">
@@ -24,7 +29,8 @@ export const createFilmCard = (film) => {
                   ${ userDetails.watchlist ? 'film-card__controls-item--active' : '' }
                 "
                 id="watchlist"
-                type="button"
+                type="watchlis"
+                title="watchlist"
               >
                   Add to watchlist
               </button>
@@ -36,6 +42,7 @@ export const createFilmCard = (film) => {
                 "
                 id="watched"
                 type="button"
+                title="already watched"
               >
                 Mark as watched
               </button>
@@ -47,6 +54,7 @@ export const createFilmCard = (film) => {
                 "
                 type="button"
                 id="favorite"
+                title="favorite"
               >
                 Mark as favorite
               </button>

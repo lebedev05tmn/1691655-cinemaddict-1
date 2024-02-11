@@ -1,10 +1,11 @@
-import { FilmPropertyRelation } from '../consts';
+import { FilmPropertyRelation, ViewActions } from '../consts';
 import { remove, render, replace } from '../framework/render';
-import CommentsModel from '../model/comments-model';
 import SiteFilmCardView from '../view/site-film-card/site-film-card-view';
 import SiteFilmPopupView from '../view/site-film-popup/site-film-popup-view';
 
 export default class FilmPresenter {
+  #commentsModel = null;
+
   #filmListContainer = null;
   #film = null;
   #comments = [];
@@ -17,11 +18,12 @@ export default class FilmPresenter {
 
   #apiService = null;
 
-  constructor ({ film, filmListContainer, onFilmCardClick, changeData, apiService }) {
+  constructor ({ film, filmListContainer, onFilmCardClick, changeData, apiService, commentsModel }) {
     this.#filmListContainer = filmListContainer;
     this.#removeOtherPopups = onFilmCardClick;
     this.#changeData = changeData;
     this.#apiService = apiService;
+    this.#commentsModel = commentsModel;
 
     this.init(film);
   }
@@ -40,7 +42,6 @@ export default class FilmPresenter {
       render(this.#filmComponent, this.#filmListContainer);
       return;
     }
-
     replace(this.#filmComponent, prevFilmComponent);
     remove(prevFilmComponent);
 
@@ -61,13 +62,6 @@ export default class FilmPresenter {
     }
   };
 
-  #handleFilmPropertyClick = (changingPropertyTarget) => {
-    const changingProperty = FilmPropertyRelation[changingPropertyTarget.id];
-
-    this.#film.user_details[changingProperty] = !this.#film.user_details[changingProperty];
-    this.#changeData(this.#film);
-  };
-
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape') {
       evt.preventDefault();
@@ -77,9 +71,7 @@ export default class FilmPresenter {
   };
 
   #getComments = async () => {
-    const commentsModel = new CommentsModel(this.#film.id, this.#apiService);
-
-    this.#comments = await commentsModel.init().then(() => commentsModel.comments);
+    this.#comments = await this.#commentsModel.init(this.#film.id).then(() => this.#commentsModel.comments);
   };
 
   #renderPopup = () => {
@@ -88,19 +80,31 @@ export default class FilmPresenter {
     this.#popupComponent = new SiteFilmPopupView(this.#film, this.#comments);
     this.#popupComponent.setPropertyClickHandler(this.#handleFilmPropertyClick);
     this.#popupComponent.setClosePopupHandler(this.removePopup);
+    this.#popupComponent.setSaveCommentHandler(this.#handleCommentSave);
 
     if (prepPopupComponent === null) {
       render(this.#popupComponent, document.body);
       return;
     }
-
     replace(this.#popupComponent, prepPopupComponent);
     remove(prepPopupComponent);
+  };
+
+  #handleCommentSave = (comment) => {
+    this.#changeData(ViewActions.UPDATE_COMMENT, comment);
+  };
+
+  #handleFilmPropertyClick = (changingPropertyTarget) => {
+    const changingProperty = FilmPropertyRelation[changingPropertyTarget.id];
+
+    this.#film.userDetails[changingProperty] = !this.#film.userDetails[changingProperty];
+    this.#changeData(ViewActions.FILM, this.#film);
   };
 
   #handleFilmCardClick = async () => {
     this.#removeOtherPopups();
     await this.#getComments();
+
     this.#renderPopup();
     document.addEventListener('keydown', this.#escKeyDownHandler);
     document.body.classList.add('hide-overflow');

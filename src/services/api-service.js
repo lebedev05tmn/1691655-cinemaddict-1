@@ -1,3 +1,4 @@
+import snakecaseKeys from 'snakecase-keys';
 import { AUTHORIZATION, END_POINT, FetchMethod } from '../consts';
 
 export default class ApiService {
@@ -31,7 +32,20 @@ export default class ApiService {
     const response = await this.#load({
       url: `movies/${film.id}`,
       method: FetchMethod.PUT,
-      body: JSON.stringify(film),
+      body: JSON.stringify(this.#adaptToServer(film)),
+      headers: new Headers({'Content-Type': 'application/json'}),
+    });
+
+    const parsedResponse = ApiService.parseResponse(response);
+
+    return parsedResponse;
+  };
+
+  updateComment = async (update) => {
+    const response = await this.#load({
+      url: `comments/${update.filmId}`,
+      method: FetchMethod.POST,
+      body: JSON.stringify(this.#adaptToServer(update.newComment)),
       headers: new Headers({'Content-Type': 'application/json'}),
     });
 
@@ -44,4 +58,6 @@ export default class ApiService {
 
   getComments = (filmId) => this.#load({url: `comments/${filmId}`})
     .then((response) => response.json());
+
+  #adaptToServer = (film) => snakecaseKeys(film, {deep: true});
 }
