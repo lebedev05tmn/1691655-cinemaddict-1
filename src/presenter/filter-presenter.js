@@ -1,14 +1,7 @@
-import { FilterType } from '../consts';
+import { FilterType, FilteredFilmsCount } from '../consts';
 import { RenderPosition, remove, render } from '../framework/render';
 import SiteFiltersView from '../view/site-filters/site-filters-view';
 import { filter } from '../utils/filter';
-
-const FilteredFilmsCount = {
-  ALL: 0,
-  WATCHLIST: 0,
-  HISTORY: 0,
-  FAVORITES: 0,
-};
 
 export default class FilterPresenter {
   #container = null;

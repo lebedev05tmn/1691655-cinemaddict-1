@@ -49,9 +49,7 @@ export default class ApiService {
       headers: new Headers({'Content-Type': 'application/json'}),
     });
 
-    const parsedResponse = ApiService.parseResponse(response);
-
-    return parsedResponse;
+    return ApiService.parseResponse(response);
   };
 
   static parseResponse = (response) => response.json();

@@ -1,4 +1,4 @@
-import { CommentReactions } from '../../consts';
+import { CommentReactions, ENTER_CODE } from '../../consts';
 import AbstractStatefulView from '../../framework/view/abstract-stateful-view';
 import { createFilmPopup } from './site-film-popup.tpl';
 
@@ -49,7 +49,7 @@ export default class SiteFilmPopupView extends AbstractStatefulView {
   };
 
   #commentSaveHandler = (evt) => {
-    if (evt.keyCode === 13 && evt.ctrlKey) {
+    if (evt.keyCode === ENTER_CODE && evt.ctrlKey) {
       evt.preventDefault();
       if (this._state.comment.length !== 0 && this._state.emotion) {
         this._callback.saveCommentClick({
