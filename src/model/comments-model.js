@@ -26,24 +26,8 @@ export default class CommentsModel extends Observable {
   updateComment = async (update) => {
     const updatedFilm = await this.#apiService.updateComment(update);
 
-    // eslint-disable-next-line no-console
-    console.log('updated film ', updatedFilm);
-
-    // const adaptedFilm = this.#adaptToClient(updatedFilm);
-
-    // try {
-    //   this.#films = [
-    //     ...this.#films.slice(0, index),
-    //     adaptedFilm,
-    //     ...this.#films.slice(index + 1)
-    //   ];
-
-    //   this._notify(UpdateType.MAJOR, adaptedFilm);
-    // } catch (err) {
-    //   throw new Error('Can\'t update film');
-    // }
+    return this.#adaptToClient(updatedFilm);
   };
 
   #adaptToClient = (film) => camelcaseKeys(film, {deep: true});
-
 }

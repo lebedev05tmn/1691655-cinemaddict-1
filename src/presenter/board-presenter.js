@@ -181,17 +181,17 @@ export default class BoardPresenter {
   #handleViewAction = async (updateType, update) => {
     switch (updateType) {
       case ViewActions.FILM:
-        await this.#filmsModel.updateFilm(update);
+        await this.#filmsModel.updateFilmProperty(update);
         break;
       case ViewActions.UPDATE_COMMENT:
         // console.log('comment update... ', update);
-        await this.#commentsModel.updateComment(update);
+        this.#filmsModel.updateFilmComments(await this.#commentsModel.updateComment(update));
         break;
     }
   };
 
   #handleModelEvent = (updateType, data) => {
-    // console.log('board-presenter ', updateType);
+    console.log('board-presenter ', updateType);
 
     switch (updateType) {
       case UpdateType.MAJOR:
@@ -203,6 +203,9 @@ export default class BoardPresenter {
       case UpdateType.MINOR:
         this.#sortType = SortType.DEFAULT;
         this.#reRenderBoard();
+        break;
+      case UpdateType.PATCH:
+        this.#filmPresenters.get(data.id).init(data);
         break;
       case UpdateType.INIT:
         this.#isLoading = false;
