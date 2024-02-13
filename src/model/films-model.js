@@ -59,7 +59,6 @@ export default class FilmsModel extends Observable {
       throw new Error('Can\'t update unexisting film');
     }
 
-
     try {
       this.#films = [
         ...this.#films.slice(0, index),

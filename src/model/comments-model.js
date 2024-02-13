@@ -13,7 +13,10 @@ export default class CommentsModel extends Observable {
 
   init = async (filmId) => {
     try {
-      this.#comments = await this.#apiService.getComments(filmId);
+      this.#filmId = filmId;
+      this.#comments = await this.#apiService.getComments(this.#filmId);
+
+      console.log('comments model init');
     } catch(err) {
       this.#comments = [];
     }
@@ -27,6 +30,14 @@ export default class CommentsModel extends Observable {
     const updatedFilm = await this.#apiService.updateComment(update);
 
     return this.#adaptToClient(updatedFilm);
+  };
+
+  deleteComment = async (commentId) => {
+    const responce = await this.#apiService.deleteComment(commentId);
+
+    if (responce.ok) {
+      await this.init(this.#filmId);
+    }
   };
 
   #adaptToClient = (film) => camelcaseKeys(film, {deep: true});

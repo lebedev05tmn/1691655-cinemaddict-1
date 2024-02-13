@@ -1,4 +1,4 @@
-import { CommentReactions, ENTER_CODE } from '../../consts';
+import { CommentReactions, ENTER_CODE, ViewActions } from '../../consts';
 import AbstractStatefulView from '../../framework/view/abstract-stateful-view';
 import { createFilmPopup } from './site-film-popup.tpl';
 
@@ -48,14 +48,32 @@ export default class SiteFilmPopupView extends AbstractStatefulView {
     this.element.querySelector('#favorite').addEventListener('click', this.#propertyClickHandler);
   };
 
+  #deleteCommentHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.deleteCommentClick(ViewActions.DELETE_COMMENT, evt.target);
+  };
+
+  setDeleteCommentHandler = (callback) => {
+    this._callback.deleteCommentClick = callback;
+    this.element
+      .querySelectorAll('.film-details__comment-delete')
+      .forEach((deleteButton) =>
+        deleteButton.addEventListener('click', this.#deleteCommentHandler)
+      );
+  };
+
   #commentSaveHandler = (evt) => {
     if (evt.keyCode === ENTER_CODE && evt.ctrlKey) {
       evt.preventDefault();
       if (this._state.comment.length !== 0 && this._state.emotion) {
-        this._callback.saveCommentClick({
-          filmId: this.#film.id,
-          newComment: this._state,
-        });
+
+        this._callback.saveCommentClick(
+          ViewActions.UPDATE_COMMENT,
+          {
+            filmId: this.#film.id,
+            newComment: this._state,
+          }
+        );
         this._callback.closeClick();
       } else {
         // console.log('Input comment and emotion');

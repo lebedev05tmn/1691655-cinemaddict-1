@@ -7,6 +7,7 @@ import SiteFilmsListView from '../view/site-film-list/site-films-list-view';
 import SiteFilmsContainerView from '../view/site-films-container/site-films-container-view';
 import SiteFilmsLoadingView from '../view/site-films-loading/site-films-loading-view';
 import ShowMoreButtonView from '../view/site-show-more-button/site-show-more-button-view';
+import SiteFilmPopupView from '../view/site-film-popup/site-film-popup-view';
 import SiteSortView from '../view/site-sort/site-sort-view';
 import FilmPresenter from './film-presenter';
 import FilterPresenter from './filter-presenter';
@@ -24,11 +25,14 @@ export default class BoardPresenter {
   #filtersComponent = null;
   #showMoreButtonComponent = null;
   #sortComponent = null;
+  #popupComponent = null;
 
   #filmListContainerComponent = new SiteFilmListContainerView();
   #filmsLoadingComponent = new SiteFilmsLoadingView();
   #allFilmsContainer = new SiteFilmsListView();
   #filmsContainerComponent = new SiteFilmsContainerView();
+
+  #comments = [];
 
   #renderedFilmsNumber = FilmCardsOnPage.ALL_PER_STEP;
   #sortType = SortType.DEFAULT;
@@ -113,25 +117,6 @@ export default class BoardPresenter {
     this.#renderBoard();
   }
 
-  #handleSortTypeChange = (sortType) => {
-    if (sortType === this.#sortType) {
-      return;
-    }
-    this.#sortType = sortType;
-    this.#clearBoard();
-    this.#renderBoard();
-  };
-
-  #renderLoading = () => {
-    render(this.#filmsLoadingComponent, this.#filmListContainerComponent.element);
-  };
-
-  #renderSort = () => {
-    this.#sortComponent = new SiteSortView(this.#sortType);
-    this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
-    render(this.#sortComponent, this.#boardContainer);
-  };
-
   #renderFilms (films) {
     this.#allFilmsContainer.removeElement();
     this.#allFilmsContainer.init();
@@ -150,10 +135,9 @@ export default class BoardPresenter {
     const filmPresenter = new FilmPresenter({
       film: film,
       filmListContainer: this.#filmListContainerComponent.element,
-      onFilmCardClick: this.#handleFilmCardClick,
+      openPopup: this.#handleFilmCardClick,
       changeData: this.#handleViewAction,
       apiService: this.#apiService,
-      commentsModel: this.#commentsModel,
     });
 
     this.#filmPresenters.set(film.id, filmPresenter);
@@ -163,6 +147,24 @@ export default class BoardPresenter {
     this.#showMoreButtonComponent = new ShowMoreButtonView({onClick: this.#handleShowMoreButtonClick});
     render(this.#showMoreButtonComponent, this.#filmListContainerComponent.element);
   }
+
+  #handleSortTypeChange = (sortType) => {
+    if (sortType === this.#sortType) {
+      return;
+    }
+    this.#sortType = sortType;
+    this.#reRenderBoard();
+  };
+
+  #renderLoading = () => {
+    render(this.#filmsLoadingComponent, this.#filmListContainerComponent.element);
+  };
+
+  #renderSort = () => {
+    this.#sortComponent = new SiteSortView(this.#sortType);
+    this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
+    render(this.#sortComponent, this.#boardContainer);
+  };
 
   #handleShowMoreButtonClick = () => {
     const newRenderedFilmsCount = Math.min(this.#renderedFilmsNumber + FilmCardsOnPage.ALL_PER_STEP, this.films.length);
@@ -174,8 +176,44 @@ export default class BoardPresenter {
     this.#renderFilms(films);
   };
 
-  #handleFilmCardClick = () => {
-    this.#filmPresenters.forEach((presenter) => presenter.removePopup());
+  #removePopup = () => {
+    document.body.classList.remove('hide-overflow');
+    remove(this.#popupComponent);
+    this.#popupComponent = null;
+  };
+
+  #escKeyDownHandler = (evt) => {
+    if (evt.key === 'Escape') {
+      evt.preventDefault();
+      this.#removePopup();
+      document.removeEventListener('keydown', this.#escKeyDownHandler);
+    }
+  };
+
+  #renderPopup = (film, comments) => {
+    this.#popupComponent = new SiteFilmPopupView(film, comments);
+
+    this.#popupComponent.setSaveCommentHandler(this.#handleViewAction);
+    this.#popupComponent.setDeleteCommentHandler(this.#handleViewAction);
+    this.#popupComponent.setClosePopupHandler(this.#removePopup);
+
+    document.addEventListener('keydown', this.#escKeyDownHandler);
+    document.body.classList.add('hide-overflow');
+
+    render(this.#popupComponent, document.body);
+  };
+
+  #handleFilmCardClick = async (film) => {
+    if (this.#popupComponent && this.#popupComponent.element.id === film.id) {
+      return;
+    }
+
+    if (this.#popupComponent) {
+      this.#popupComponent.element.remove();
+    }
+    const comments = await this.#commentsModel.init(film.id).then(() => this.#commentsModel.comments);
+
+    this.#renderPopup(film, comments);
   };
 
   #handleViewAction = async (updateType, update) => {
@@ -184,8 +222,13 @@ export default class BoardPresenter {
         await this.#filmsModel.updateFilmProperty(update);
         break;
       case ViewActions.UPDATE_COMMENT:
-        // console.log('comment update... ', update);
-        this.#filmsModel.updateFilmComments(await this.#commentsModel.updateComment(update));
+        this.#filmsModel.updateFilmComments(
+          await this.#commentsModel.updateComment(update)
+        );
+        break;
+      case ViewActions.DELETE_COMMENT:
+        await this.#commentsModel.deleteComment(update.id);
+
         break;
     }
   };
@@ -198,7 +241,7 @@ export default class BoardPresenter {
         this.#filterPresenter.destroy();
         this.#filterPresenter.init();
         this.#filmPresenters.get(data.id).init(data);
-        this.#reRenderBoard();
+        // this.#reRenderBoard();
         break;
       case UpdateType.MINOR:
         this.#sortType = SortType.DEFAULT;
