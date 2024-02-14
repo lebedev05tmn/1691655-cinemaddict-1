@@ -15,8 +15,6 @@ export default class CommentsModel extends Observable {
     try {
       this.#filmId = filmId;
       this.#comments = await this.#apiService.getComments(this.#filmId);
-
-      console.log('comments model init');
     } catch(err) {
       this.#comments = [];
     }
@@ -27,9 +25,9 @@ export default class CommentsModel extends Observable {
   }
 
   updateComment = async (update) => {
-    const updatedFilm = await this.#apiService.updateComment(update);
+    const responce = await this.#apiService.updateComment(update);
 
-    return this.#adaptToClient(updatedFilm);
+    return this.#adaptToClient(responce);
   };
 
   deleteComment = async (commentId) => {

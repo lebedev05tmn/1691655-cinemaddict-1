@@ -51,8 +51,8 @@ export default class FilmsModel extends Observable {
     }
   };
 
-  updateFilmComments = (update) => {
-    const currentFilm = update.movie;
+  updateFilmComments = (data) => {
+    const currentFilm = data.movie;
     const index = this.#films.findIndex((film) => film.id === currentFilm.id);
 
     if (index === -1) {
@@ -65,7 +65,9 @@ export default class FilmsModel extends Observable {
         currentFilm,
         ...this.#films.slice(index + 1)
       ];
-      this._notify(UpdateType.PATCH, currentFilm);
+
+      this._notify(UpdateType.PATCH, data);
+
     } catch (err) {
       throw new Error('Can\'t update');
     }

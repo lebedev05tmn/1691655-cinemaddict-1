@@ -14,13 +14,11 @@ export default class FilmPresenter {
 
   #apiService = null;
 
-  constructor ({ film, filmListContainer, openPopup, changeData, apiService }) {
+  constructor ({ filmListContainer, openPopup, changeData, apiService }) {
     this.#filmListContainer = filmListContainer;
     this.#changeData = changeData;
     this.#apiService = apiService;
     this.#openPopupCallback = openPopup;
-
-    this.init(film);
   }
 
   init(film) {

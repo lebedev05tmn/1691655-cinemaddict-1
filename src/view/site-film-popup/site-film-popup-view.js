@@ -27,6 +27,7 @@ export default class SiteFilmPopupView extends AbstractStatefulView {
 
   #closePopupHandler = (evt) => {
     evt.preventDefault();
+    document.removeEventListener('keydown', this.#commentSaveHandler);
     this._callback.closeClick();
   };
 
@@ -65,6 +66,7 @@ export default class SiteFilmPopupView extends AbstractStatefulView {
   #commentSaveHandler = (evt) => {
     if (evt.keyCode === ENTER_CODE && evt.ctrlKey) {
       evt.preventDefault();
+      document.removeEventListener('keydown', this.#commentSaveHandler);
       if (this._state.comment.length !== 0 && this._state.emotion) {
 
         this._callback.saveCommentClick(
@@ -74,7 +76,6 @@ export default class SiteFilmPopupView extends AbstractStatefulView {
             newComment: this._state,
           }
         );
-        this._callback.closeClick();
       } else {
         // console.log('Input comment and emotion');
       }

@@ -7,14 +7,15 @@ import SiteFilmsListView from '../view/site-film-list/site-films-list-view';
 import SiteFilmsContainerView from '../view/site-films-container/site-films-container-view';
 import SiteFilmsLoadingView from '../view/site-films-loading/site-films-loading-view';
 import ShowMoreButtonView from '../view/site-show-more-button/site-show-more-button-view';
-import SiteFilmPopupView from '../view/site-film-popup/site-film-popup-view';
 import SiteSortView from '../view/site-sort/site-sort-view';
 import FilmPresenter from './film-presenter';
 import FilterPresenter from './filter-presenter';
+import PopupPresenter from './popup-presenter';
 
 export default class BoardPresenter {
   #filmPresenters = new Map();
   #filterPresenter = null;
+  #popupPresenter = null;
 
   #filmsModel = null;
   #filterModel = null;
@@ -25,7 +26,6 @@ export default class BoardPresenter {
   #filtersComponent = null;
   #showMoreButtonComponent = null;
   #sortComponent = null;
-  #popupComponent = null;
 
   #filmListContainerComponent = new SiteFilmListContainerView();
   #filmsLoadingComponent = new SiteFilmsLoadingView();
@@ -133,12 +133,12 @@ export default class BoardPresenter {
 
   #renderFilm (film) {
     const filmPresenter = new FilmPresenter({
-      film: film,
       filmListContainer: this.#filmListContainerComponent.element,
       openPopup: this.#handleFilmCardClick,
       changeData: this.#handleViewAction,
       apiService: this.#apiService,
     });
+    filmPresenter.init(film);
 
     this.#filmPresenters.set(film.id, filmPresenter);
   }
@@ -176,44 +176,30 @@ export default class BoardPresenter {
     this.#renderFilms(films);
   };
 
-  #removePopup = () => {
-    document.body.classList.remove('hide-overflow');
-    remove(this.#popupComponent);
-    this.#popupComponent = null;
-  };
-
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape') {
       evt.preventDefault();
-      this.#removePopup();
-      document.removeEventListener('keydown', this.#escKeyDownHandler);
+      this.#popupPresenter.destroyComponent();
     }
   };
 
-  #renderPopup = (film, comments) => {
-    this.#popupComponent = new SiteFilmPopupView(film, comments);
-
-    this.#popupComponent.setSaveCommentHandler(this.#handleViewAction);
-    this.#popupComponent.setDeleteCommentHandler(this.#handleViewAction);
-    this.#popupComponent.setClosePopupHandler(this.#removePopup);
-
-    document.addEventListener('keydown', this.#escKeyDownHandler);
-    document.body.classList.add('hide-overflow');
-
-    render(this.#popupComponent, document.body);
+  #removePopupPresenter = () => {
+    this.#popupPresenter = null;
+    document.removeEventListener('keydown', this.#escKeyDownHandler);
   };
 
   #handleFilmCardClick = async (film) => {
-    if (this.#popupComponent && this.#popupComponent.element.id === film.id) {
+    if (this.#popupPresenter && this.#popupPresenter.popupFilmId === film.id) {
       return;
-    }
-
-    if (this.#popupComponent) {
-      this.#popupComponent.element.remove();
     }
     const comments = await this.#commentsModel.init(film.id).then(() => this.#commentsModel.comments);
 
-    this.#renderPopup(film, comments);
+    if (!this.#popupPresenter) {
+      this.#popupPresenter = new PopupPresenter(this.#handleViewAction, this.#removePopupPresenter);
+      document.addEventListener('keydown', this.#escKeyDownHandler);
+      document.body.classList.add('hide-overflow');
+    }
+    this.#popupPresenter.init(film, comments);
   };
 
   #handleViewAction = async (updateType, update) => {
@@ -227,8 +213,8 @@ export default class BoardPresenter {
         );
         break;
       case ViewActions.DELETE_COMMENT:
+        console.log('deleting comment');
         await this.#commentsModel.deleteComment(update.id);
-
         break;
     }
   };
@@ -248,7 +234,8 @@ export default class BoardPresenter {
         this.#reRenderBoard();
         break;
       case UpdateType.PATCH:
-        this.#filmPresenters.get(data.id).init(data);
+        this.#filmPresenters.get(data.movie.id).init(data.movie);
+        this.#popupPresenter.init(data.movie, data.comments);
         break;
       case UpdateType.INIT:
         this.#isLoading = false;
