@@ -51,7 +51,7 @@ export default class FilmsModel extends Observable {
     }
   };
 
-  updateFilmComments = (data) => {
+  updateAfterAddComment = (data) => {
     const currentFilm = data.movie;
     const index = this.#films.findIndex((film) => film.id === currentFilm.id);
 
@@ -67,10 +67,17 @@ export default class FilmsModel extends Observable {
       ];
 
       this._notify(UpdateType.PATCH, data);
-
     } catch (err) {
       throw new Error('Can\'t update');
     }
+  };
+
+  updateAfterDeleteComment = (data) => {
+    const currentFilm = this.#films.find((film) => film.id === data.filmId);
+
+    currentFilm.comments.length = data.comments.length;
+
+    this._notify(UpdateType.PATCH, {movie: currentFilm, comments: data.comments});
   };
 
   #adaptToClient = (film) => camelcaseKeys(film, {deep: true});

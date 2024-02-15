@@ -208,13 +208,16 @@ export default class BoardPresenter {
         await this.#filmsModel.updateFilmProperty(update);
         break;
       case ViewActions.UPDATE_COMMENT:
-        this.#filmsModel.updateFilmComments(
+        this.#filmsModel.updateAfterAddComment(
           await this.#commentsModel.updateComment(update)
         );
         break;
       case ViewActions.DELETE_COMMENT:
-        console.log('deleting comment');
-        await this.#commentsModel.deleteComment(update.id);
+        console.log('deleting comment ', update.id);
+
+        this.#filmsModel.updateAfterDeleteComment(
+          await this.#commentsModel.deleteComment(update.id)
+        );
         break;
     }
   };

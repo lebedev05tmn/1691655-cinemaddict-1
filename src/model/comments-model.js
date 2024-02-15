@@ -36,6 +36,11 @@ export default class CommentsModel extends Observable {
     if (responce.ok) {
       await this.init(this.#filmId);
     }
+
+    return {
+      filmId: this.#filmId,
+      comments: this.#comments
+    };
   };
 
   #adaptToClient = (film) => camelcaseKeys(film, {deep: true});
