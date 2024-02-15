@@ -43,24 +43,14 @@ export default class FilmPresenter {
     remove(this.#filmComponent);
   };
 
-  #renderPopup = () => {
-    const prepPopupComponent = this.#popupComponent;
-
-    this.#popupComponent.setPropertyClickHandler(this.#handleFilmPropertyClick);
-
-    replace(this.#popupComponent, prepPopupComponent);
-    remove(prepPopupComponent);
-  };
-
   #handleDeleteComment = (comment) => {
     this.#changeData(ViewActions.DELETE_COMMENT, comment);
   };
-
 
   #handleFilmPropertyClick = (changingPropertyTarget) => {
     const changingProperty = FilmPropertyRelation[changingPropertyTarget.id];
 
     this.#film.userDetails[changingProperty] = !this.#film.userDetails[changingProperty];
-    this.#changeData(ViewActions.FILM, this.#film);
+    this.#changeData(ViewActions.FILM, { movie: this.#film, comments: [], });
   };
 }

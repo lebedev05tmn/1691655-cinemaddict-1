@@ -213,8 +213,6 @@ export default class BoardPresenter {
         );
         break;
       case ViewActions.DELETE_COMMENT:
-        console.log('deleting comment ', update.id);
-
         this.#filmsModel.updateAfterDeleteComment(
           await this.#commentsModel.deleteComment(update.id)
         );
@@ -223,14 +221,16 @@ export default class BoardPresenter {
   };
 
   #handleModelEvent = (updateType, data) => {
-    console.log('board-presenter ', updateType);
+    // console.log('board-presenter ', updateType);
 
     switch (updateType) {
       case UpdateType.MAJOR:
         this.#filterPresenter.destroy();
         this.#filterPresenter.init();
-        this.#filmPresenters.get(data.id).init(data);
-        // this.#reRenderBoard();
+        this.#filmPresenters.get(data.movie.id).init(data.movie);
+        if (this.#popupPresenter) {
+          this.#popupPresenter.init(data.movie, data.comments);
+        }
         break;
       case UpdateType.MINOR:
         this.#sortType = SortType.DEFAULT;

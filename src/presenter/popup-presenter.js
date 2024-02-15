@@ -1,3 +1,4 @@
+import { FilmPropertyRelation, ViewActions } from '../consts';
 import { remove, render, replace } from '../framework/render';
 import SiteFilmPopupView from '../view/site-film-popup/site-film-popup-view';
 
@@ -26,6 +27,9 @@ export default class PopupPresenter {
     this.#comments = comments;
 
     this.#popupComponent = new SiteFilmPopupView(this.#film, this.#comments);
+
+    this.#popupComponent.setPropertyClickHandler(this.#handleFilmPropertyClick);
+
     this.#popupComponent.setSaveCommentHandler(this.#changeData);
     this.#popupComponent.setDeleteCommentHandler(this.#changeData);
     this.#popupComponent.setClosePopupHandler(this.destroyComponent);
@@ -44,5 +48,12 @@ export default class PopupPresenter {
 
     this.#removePopupPresenter();
     document.body.classList.remove('hide-overflow');
+  };
+
+  #handleFilmPropertyClick = (changingPropertyTarget) => {
+    const changingProperty = FilmPropertyRelation[changingPropertyTarget.id];
+
+    this.#film.userDetails[changingProperty] = !this.#film.userDetails[changingProperty];
+    this.#changeData(ViewActions.FILM, { movie: this.#film, comments: this.#comments, });
   };
 }

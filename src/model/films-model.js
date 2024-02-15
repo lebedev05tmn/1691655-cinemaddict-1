@@ -29,13 +29,13 @@ export default class FilmsModel extends Observable {
   };
 
   updateFilmProperty = async (update) => {
-    const index = this.#films.findIndex((film) => film.id === update.id);
+    const index = this.#films.findIndex((film) => film.id === update.movie.id);
 
     if (index === -1) {
       throw new Error('Can\'t update unexisting film');
     }
 
-    const updatedFilm = await this.#apiService.updateFilm(update);
+    const updatedFilm = await this.#apiService.updateFilm(update.movie);
     const adaptedFilm = this.#adaptToClient(updatedFilm);
 
     try {
@@ -45,7 +45,7 @@ export default class FilmsModel extends Observable {
         ...this.#films.slice(index + 1)
       ];
 
-      this._notify(UpdateType.MAJOR, adaptedFilm);
+      this._notify(UpdateType.MAJOR, { movie: adaptedFilm, comments: update.comments, });
     } catch (err) {
       throw new Error('Can\'t update film');
     }
