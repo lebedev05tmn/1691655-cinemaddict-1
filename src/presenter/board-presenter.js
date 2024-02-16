@@ -23,7 +23,6 @@ export default class BoardPresenter {
   #commentsModel = null;
 
   #boardContainer = null;
-  #filtersComponent = null;
   #showMoreButtonComponent = null;
   #sortComponent = null;
 
@@ -31,8 +30,6 @@ export default class BoardPresenter {
   #filmsLoadingComponent = new SiteFilmsLoadingView();
   #allFilmsContainer = new SiteFilmsListView();
   #filmsContainerComponent = new SiteFilmsContainerView();
-
-  #comments = [];
 
   #renderedFilmsNumber = FilmCardsOnPage.ALL_PER_STEP;
   #sortType = SortType.DEFAULT;
@@ -136,7 +133,6 @@ export default class BoardPresenter {
       filmListContainer: this.#filmListContainerComponent.element,
       openPopup: this.#handleFilmCardClick,
       changeData: this.#handleViewAction,
-      apiService: this.#apiService,
     });
     filmPresenter.init(film);
 

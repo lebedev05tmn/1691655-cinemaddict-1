@@ -75,7 +75,7 @@ export default class FilmsModel extends Observable {
   updateAfterDeleteComment = (data) => {
     const currentFilm = this.#films.find((film) => film.id === data.filmId);
 
-    currentFilm.comments.length = data.comments.length;
+    currentFilm.comments = data.comments.map((comment) => comment.id);
 
     this._notify(UpdateType.PATCH, {movie: currentFilm, comments: data.comments});
   };

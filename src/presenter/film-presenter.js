@@ -10,14 +10,10 @@ export default class FilmPresenter {
   #openPopupCallback = null;
 
   #filmComponent = null;
-  #popupComponent = null;
 
-  #apiService = null;
-
-  constructor ({ filmListContainer, openPopup, changeData, apiService }) {
+  constructor ({ filmListContainer, openPopup, changeData }) {
     this.#filmListContainer = filmListContainer;
     this.#changeData = changeData;
-    this.#apiService = apiService;
     this.#openPopupCallback = openPopup;
   }
 
@@ -41,10 +37,6 @@ export default class FilmPresenter {
 
   destroy = () => {
     remove(this.#filmComponent);
-  };
-
-  #handleDeleteComment = (comment) => {
-    this.#changeData(ViewActions.DELETE_COMMENT, comment);
   };
 
   #handleFilmPropertyClick = (changingPropertyTarget) => {
