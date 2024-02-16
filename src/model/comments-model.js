@@ -13,7 +13,8 @@ export default class CommentsModel extends Observable {
 
   init = async (filmId) => {
     try {
-      this.#comments = await this.#apiService.getComments(filmId);
+      this.#filmId = filmId;
+      this.#comments = await this.#apiService.getComments(this.#filmId);
     } catch(err) {
       this.#comments = [];
     }
@@ -24,26 +25,23 @@ export default class CommentsModel extends Observable {
   }
 
   updateComment = async (update) => {
-    const updatedFilm = await this.#apiService.updateComment(update);
+    const response = await this.#apiService.updateComment(update);
 
-    // eslint-disable-next-line no-console
-    console.log('updated film ', updatedFilm);
+    return this.#adaptToClient(response);
+  };
 
-    // const adaptedFilm = this.#adaptToClient(updatedFilm);
+  deleteComment = async (commentId) => {
+    const response = await this.#apiService.deleteComment(commentId);
 
-    // try {
-    //   this.#films = [
-    //     ...this.#films.slice(0, index),
-    //     adaptedFilm,
-    //     ...this.#films.slice(index + 1)
-    //   ];
+    if (response.ok) {
+      await this.init(this.#filmId);
+    }
 
-    //   this._notify(UpdateType.MAJOR, adaptedFilm);
-    // } catch (err) {
-    //   throw new Error('Can\'t update film');
-    // }
+    return {
+      filmId: this.#filmId,
+      comments: this.#comments
+    };
   };
 
   #adaptToClient = (film) => camelcaseKeys(film, {deep: true});
-
 }

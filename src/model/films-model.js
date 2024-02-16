@@ -28,14 +28,14 @@ export default class FilmsModel extends Observable {
     this._notify(UpdateType.INIT);
   };
 
-  updateFilm = async (update) => {
-    const index = this.#films.findIndex((film) => film.id === update.id);
+  updateFilmProperty = async (update) => {
+    const index = this.#films.findIndex((film) => film.id === update.movie.id);
 
     if (index === -1) {
       throw new Error('Can\'t update unexisting film');
     }
 
-    const updatedFilm = await this.#apiService.updateFilm(update);
+    const updatedFilm = await this.#apiService.updateFilm(update.movie);
     const adaptedFilm = this.#adaptToClient(updatedFilm);
 
     try {
@@ -45,10 +45,39 @@ export default class FilmsModel extends Observable {
         ...this.#films.slice(index + 1)
       ];
 
-      this._notify(UpdateType.MAJOR, adaptedFilm);
+      this._notify(UpdateType.MAJOR, { movie: adaptedFilm, comments: update.comments, });
     } catch (err) {
       throw new Error('Can\'t update film');
     }
+  };
+
+  updateAfterAddComment = (data) => {
+    const currentFilm = data.movie;
+    const index = this.#films.findIndex((film) => film.id === currentFilm.id);
+
+    if (index === -1) {
+      throw new Error('Can\'t update unexisting film');
+    }
+
+    try {
+      this.#films = [
+        ...this.#films.slice(0, index),
+        currentFilm,
+        ...this.#films.slice(index + 1)
+      ];
+
+      this._notify(UpdateType.PATCH, data);
+    } catch (err) {
+      throw new Error('Can\'t update');
+    }
+  };
+
+  updateAfterDeleteComment = (data) => {
+    const currentFilm = this.#films.find((film) => film.id === data.filmId);
+
+    currentFilm.comments = data.comments.map((comment) => comment.id);
+
+    this._notify(UpdateType.PATCH, {movie: currentFilm, comments: data.comments});
   };
 
   #adaptToClient = (film) => camelcaseKeys(film, {deep: true});

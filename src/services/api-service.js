@@ -49,9 +49,17 @@ export default class ApiService {
       headers: new Headers({'Content-Type': 'application/json'}),
     });
 
-    const parsedResponse = ApiService.parseResponse(response);
+    return ApiService.parseResponse(response);
+  };
 
-    return parsedResponse;
+  deleteComment = async (commentId) => {
+    const responce = await this.#load({
+      url: `comments/${commentId}`,
+      method: FetchMethod.DELETE,
+      headers: new Headers({'Content-Type': 'application/json'}),
+    });
+
+    return responce;
   };
 
   static parseResponse = (response) => response.json();

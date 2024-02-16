@@ -43,6 +43,13 @@ export const FilmCardsOnPage = {
   RECOMMENDED: 2
 };
 
+export const FilteredFilmsCount = {
+  ALL: 0,
+  WATCHLIST: 0,
+  HISTORY: 0,
+  FAVORITES: 0,
+};
+
 export const FilmPropertyRelation = {
   favorite: 'favorite',
   watchlist: 'watchlist',
@@ -58,5 +65,6 @@ export const FetchMethod = {
 
 export const END_POINT = 'https://20.objects.htmlacademy.pro/cinemaddict/';
 export const AUTHORIZATION = 'Basic dmV0cm92Nzg6dmV0cm92Nzg=';
+export const ENTER_CODE = 13;
 
 

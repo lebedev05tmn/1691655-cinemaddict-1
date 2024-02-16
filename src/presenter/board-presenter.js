@@ -10,10 +10,12 @@ import ShowMoreButtonView from '../view/site-show-more-button/site-show-more-but
 import SiteSortView from '../view/site-sort/site-sort-view';
 import FilmPresenter from './film-presenter';
 import FilterPresenter from './filter-presenter';
+import PopupPresenter from './popup-presenter';
 
 export default class BoardPresenter {
   #filmPresenters = new Map();
   #filterPresenter = null;
+  #popupPresenter = null;
 
   #filmsModel = null;
   #filterModel = null;
@@ -21,7 +23,6 @@ export default class BoardPresenter {
   #commentsModel = null;
 
   #boardContainer = null;
-  #filtersComponent = null;
   #showMoreButtonComponent = null;
   #sortComponent = null;
 
@@ -113,25 +114,6 @@ export default class BoardPresenter {
     this.#renderBoard();
   }
 
-  #handleSortTypeChange = (sortType) => {
-    if (sortType === this.#sortType) {
-      return;
-    }
-    this.#sortType = sortType;
-    this.#clearBoard();
-    this.#renderBoard();
-  };
-
-  #renderLoading = () => {
-    render(this.#filmsLoadingComponent, this.#filmListContainerComponent.element);
-  };
-
-  #renderSort = () => {
-    this.#sortComponent = new SiteSortView(this.#sortType);
-    this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
-    render(this.#sortComponent, this.#boardContainer);
-  };
-
   #renderFilms (films) {
     this.#allFilmsContainer.removeElement();
     this.#allFilmsContainer.init();
@@ -148,13 +130,11 @@ export default class BoardPresenter {
 
   #renderFilm (film) {
     const filmPresenter = new FilmPresenter({
-      film: film,
       filmListContainer: this.#filmListContainerComponent.element,
-      onFilmCardClick: this.#handleFilmCardClick,
+      openPopup: this.#handleFilmCardClick,
       changeData: this.#handleViewAction,
-      apiService: this.#apiService,
-      commentsModel: this.#commentsModel,
     });
+    filmPresenter.init(film);
 
     this.#filmPresenters.set(film.id, filmPresenter);
   }
@@ -163,6 +143,24 @@ export default class BoardPresenter {
     this.#showMoreButtonComponent = new ShowMoreButtonView({onClick: this.#handleShowMoreButtonClick});
     render(this.#showMoreButtonComponent, this.#filmListContainerComponent.element);
   }
+
+  #handleSortTypeChange = (sortType) => {
+    if (sortType === this.#sortType) {
+      return;
+    }
+    this.#sortType = sortType;
+    this.#reRenderBoard();
+  };
+
+  #renderLoading = () => {
+    render(this.#filmsLoadingComponent, this.#filmListContainerComponent.element);
+  };
+
+  #renderSort = () => {
+    this.#sortComponent = new SiteSortView(this.#sortType);
+    this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
+    render(this.#sortComponent, this.#boardContainer);
+  };
 
   #handleShowMoreButtonClick = () => {
     const newRenderedFilmsCount = Math.min(this.#renderedFilmsNumber + FilmCardsOnPage.ALL_PER_STEP, this.films.length);
@@ -174,18 +172,46 @@ export default class BoardPresenter {
     this.#renderFilms(films);
   };
 
-  #handleFilmCardClick = () => {
-    this.#filmPresenters.forEach((presenter) => presenter.removePopup());
+  #escKeyDownHandler = (evt) => {
+    if (evt.key === 'Escape') {
+      evt.preventDefault();
+      this.#popupPresenter.destroyComponent();
+    }
+  };
+
+  #removePopupPresenter = () => {
+    this.#popupPresenter = null;
+    document.removeEventListener('keydown', this.#escKeyDownHandler);
+  };
+
+  #handleFilmCardClick = async (film) => {
+    if (this.#popupPresenter && this.#popupPresenter.popupFilmId === film.id) {
+      return;
+    }
+    const comments = await this.#commentsModel.init(film.id).then(() => this.#commentsModel.comments);
+
+    if (!this.#popupPresenter) {
+      this.#popupPresenter = new PopupPresenter(this.#handleViewAction, this.#removePopupPresenter);
+      document.addEventListener('keydown', this.#escKeyDownHandler);
+      document.body.classList.add('hide-overflow');
+    }
+    this.#popupPresenter.init(film, comments);
   };
 
   #handleViewAction = async (updateType, update) => {
     switch (updateType) {
       case ViewActions.FILM:
-        await this.#filmsModel.updateFilm(update);
+        await this.#filmsModel.updateFilmProperty(update);
         break;
       case ViewActions.UPDATE_COMMENT:
-        // console.log('comment update... ', update);
-        await this.#commentsModel.updateComment(update);
+        this.#filmsModel.updateAfterAddComment(
+          await this.#commentsModel.updateComment(update)
+        );
+        break;
+      case ViewActions.DELETE_COMMENT:
+        this.#filmsModel.updateAfterDeleteComment(
+          await this.#commentsModel.deleteComment(update.id)
+        );
         break;
     }
   };
@@ -197,12 +223,18 @@ export default class BoardPresenter {
       case UpdateType.MAJOR:
         this.#filterPresenter.destroy();
         this.#filterPresenter.init();
-        this.#filmPresenters.get(data.id).init(data);
-        this.#reRenderBoard();
+        this.#filmPresenters.get(data.movie.id).init(data.movie);
+        if (this.#popupPresenter) {
+          this.#popupPresenter.init(data.movie, data.comments);
+        }
         break;
       case UpdateType.MINOR:
         this.#sortType = SortType.DEFAULT;
         this.#reRenderBoard();
+        break;
+      case UpdateType.PATCH:
+        this.#filmPresenters.get(data.movie.id).init(data.movie);
+        this.#popupPresenter.init(data.movie, data.comments);
         break;
       case UpdateType.INIT:
         this.#isLoading = false;

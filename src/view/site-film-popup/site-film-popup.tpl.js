@@ -5,7 +5,7 @@ export const createFilmPopup = (film, comments) => {
   const createCommentsList = () => {
     const commentsList = comments.map(
       (commentData) => {
-        const { author, comment, emotion, date } = commentData;
+        const { id, author, comment, emotion, date } = commentData;
 
         return `<li class="film-details__comment">
                   <span class="film-details__comment-emoji">
@@ -16,7 +16,7 @@ export const createFilmPopup = (film, comments) => {
                   <p class="film-details__comment-info">
                     <span class="film-details__comment-author">${ author }</span>
                     <span class="film-details__comment-day">${ dayjs(date).format('YYYY/MM/DD HH:mm') }</span>
-                    <button class="film-details__comment-delete">Delete</button>
+                    <button class="film-details__comment-delete" id="${id}">Delete</button>
                   </p>
                 </div>
               </li>`;
@@ -36,7 +36,7 @@ export const createFilmPopup = (film, comments) => {
 
   dayjs.extend(duration);
 
-  return `<section class="film-details">
+  return `<section class="film-details" id=${film.id}>
             <div class="film-details__inner">
               <div class="film-details__top-container">
                 <div class="film-details__close">
