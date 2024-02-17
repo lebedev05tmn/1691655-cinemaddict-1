@@ -1,6 +1,7 @@
 import { CommentReactions, ENTER_CODE, ViewActions } from '../../consts';
 import AbstractStatefulView from '../../framework/view/abstract-stateful-view';
 import { createFilmPopup } from './site-film-popup.tpl';
+import he from 'he';
 
 const COMMENT_BLANK = {
   comment: '',
@@ -68,12 +69,14 @@ export default class SiteFilmPopupView extends AbstractStatefulView {
       evt.preventDefault();
       document.removeEventListener('keydown', this.#commentSaveHandler);
       if (this._state.comment.length !== 0 && this._state.emotion) {
-
         this._callback.saveCommentClick(
           ViewActions.UPDATE_COMMENT,
           {
             filmId: this.#film.id,
-            newComment: this._state,
+            newComment: {
+              emotion: this._state.emotion,
+              comment: he.encode(this._state.comment),
+            }
           }
         );
       } else {
