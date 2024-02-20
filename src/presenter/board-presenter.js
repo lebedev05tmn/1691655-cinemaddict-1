@@ -8,6 +8,7 @@ import SiteFilmsContainerView from '../view/site-films-container/site-films-cont
 import SiteFilmsLoadingView from '../view/site-films-loading/site-films-loading-view';
 import ShowMoreButtonView from '../view/site-show-more-button/site-show-more-button-view';
 import SiteSortView from '../view/site-sort/site-sort-view';
+import SiteStatisticsView from '../view/site-statistics/site-statistics-view';
 import FilmPresenter from './film-presenter';
 import FilterPresenter from './filter-presenter';
 import PopupPresenter from './popup-presenter';
@@ -19,7 +20,6 @@ export default class BoardPresenter {
 
   #filmsModel = null;
   #filterModel = null;
-  #apiService = null;
   #commentsModel = null;
 
   #boardContainer = null;
@@ -36,11 +36,10 @@ export default class BoardPresenter {
 
   #isLoading = true;
 
-  constructor(boardContainer, filmsModel, filterModel, apiService, commentsModel) {
+  constructor(boardContainer, filmsModel, filterModel, commentsModel) {
     this.#boardContainer = boardContainer;
     this.#filmsModel = filmsModel;
     this.#filterModel = filterModel;
-    this.#apiService = apiService;
     this.#commentsModel = commentsModel;
 
     this.#filterPresenter = new FilterPresenter(
@@ -73,6 +72,9 @@ export default class BoardPresenter {
   }
 
   #renderBoard () {
+    const filmsCount = this.films.length;
+    const footerContainer = document.querySelector('.footer__statistics');
+
     render(this.#filmsContainerComponent, this.#boardContainer);
     render(this.#filmListContainerComponent, this.#filmsContainerComponent.element);
 
@@ -83,8 +85,6 @@ export default class BoardPresenter {
 
       return;
     }
-
-    const filmsCount = this.films.length;
 
     if (filmsCount === 0) {
       this.#allFilmsContainer.removeElement();
@@ -97,6 +97,8 @@ export default class BoardPresenter {
     this.#renderSort();
     render(this.#filmsContainerComponent, this.#boardContainer);
     this.#renderFilms(this.films.slice(0, Math.min(filmsCount, this.#renderedFilmsNumber)));
+    
+    render(new SiteStatisticsView(this.films.length), footerContainer);
   }
 
   #clearBoard () {
@@ -244,5 +246,4 @@ export default class BoardPresenter {
         break;
     }
   };
-
 }
