@@ -19,13 +19,12 @@ const boardPresenter = new BoardPresenter(
   mainContainer,
   filmsModel,
   filterModel,
-  commentsModel
+  commentsModel,
 );
 
 boardPresenter.init();
 navigation.init();
 
 filmsModel.init().finally(() => {
-  // filterPresenter.init();
-  // boardPresenter.init();
+  
 });

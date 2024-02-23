@@ -2,23 +2,21 @@ import AbstractView from '../../framework/view/abstract-view';
 import { createFilmsListTemplate } from './site-films-list.tpl';
 
 export default class SiteFilmsListView extends AbstractView {
-  #filterType = null;
-
   constructor () {
     super();
   }
 
   init ({
-    filterType,
+    titleName,
     isEmptyList = false,
     isExtra = false,
   } = {}) {
-    this.#filterType = filterType;
+    this.titleName = titleName;
     this.isEmptyList = isEmptyList;
     this.isExtra = isExtra;
   }
 
   get template () {
-    return createFilmsListTemplate(this.#filterType, this.isEmptyList, this.isExtra);
+    return createFilmsListTemplate(this.titleName, this.isEmptyList, this.isExtra);
   }
 }

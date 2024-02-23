@@ -18,10 +18,9 @@ export default class FilmPresenter {
   }
 
   init(film) {
-    this.#film = film;
-
     const prevFilmComponent = this.#filmComponent;
 
+    this.#film = film;
     this.#filmComponent = new SiteFilmCardView(film);
 
     this.#filmComponent.setPropertyClickHandler(this.#handleFilmPropertyClick);

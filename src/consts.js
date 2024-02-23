@@ -11,6 +11,15 @@ export const FilterType = {
   FAVORITES: 'Favorites',
 };
 
+export const FilmListTitles = {
+  [FilterType.ALL]: 'There are no movies in our database',
+  [FilterType.WATCHLIST]: 'There are no movies to watch now',
+  [FilterType.HISTORY]: 'There are no watched movies now',
+  [FilterType.FAVORITES]: 'There are no favorite movies now',
+  TOP_RATED: 'Top Rated',
+  MOST_COMMENTED: 'Most Commented',
+};
+
 export const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',

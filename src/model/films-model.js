@@ -5,7 +5,6 @@ import Observable from '../framework/observable';
 export default class FilmsModel extends Observable {
   #films = [];
   #apiService = null;
-  #observers = new Set();
 
   constructor (apiService) {
     super();
@@ -14,6 +13,27 @@ export default class FilmsModel extends Observable {
 
   get films() {
     return this.#films;
+  }
+
+  get extraFilmIds() {
+    const filmExtraIds = {
+      topRated: [],
+      mostCommented: [],
+    }
+
+    filmExtraIds.topRated = this.films
+      .filter((film) => film.filmInfo.totalRating > 0)
+      .sort((film1, film2) => film2.filmInfo.totalRating - film1.filmInfo.totalRating)
+      .slice(0, 2)
+      .map((film) => film.id);
+  
+    filmExtraIds.mostCommented = this.films
+      .filter((film) => film.comments.length > 0)
+      .sort((film1, film2) => film2.comments.length - film1.comments.length)
+      .slice(0, 2)
+      .map((film) => film.id);
+
+    return filmExtraIds;
   }
 
   init = async () => {
