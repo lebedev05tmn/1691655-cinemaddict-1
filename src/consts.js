@@ -12,6 +12,8 @@ export const FilterType = {
 };
 
 export const FilmListTitles = {
+  LOADING: 'Loading...',
+  ALL_FILMS: 'All movies. Upcoming',
   [FilterType.ALL]: 'There are no movies in our database',
   [FilterType.WATCHLIST]: 'There are no movies to watch now',
   [FilterType.HISTORY]: 'There are no watched movies now',
