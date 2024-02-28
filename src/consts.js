@@ -74,8 +74,13 @@ export const FetchMethod = {
   DELETE: 'DELETE',
 };
 
+export const filmsContainerName = {
+  COMMON_LIST: 'COMMON_LIST',
+  TOP_RATED_FILMS: 'TOP_RATED_FILMS',
+  MOST_COMMENTED_FILMS: 'MOST_COMMENTED_FILMS',
+};
+
 export const END_POINT = 'https://20.objects.htmlacademy.pro/cinemaddict/';
 export const AUTHORIZATION = 'Basic dmV0cm92Nzg6dmV0cm92Nzg=';
 export const ENTER_CODE = 13;
-
-
+export const EXTRA_FILMS_NUMBER = 2;

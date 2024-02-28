@@ -24,7 +24,3 @@ const boardPresenter = new BoardPresenter(
 
 boardPresenter.init();
 navigation.init();
-
-filmsModel.init().finally(() => {
-  
-});

@@ -5,7 +5,6 @@ import SiteFilmCardView from '../view/site-film-card/site-film-card-view';
 export default class FilmPresenter {
   #prevFilmComponent = null;
   #filmListContainer = null;
-  #topRatedFilmsContainer = null;
   #film = null;
 
   #changeData = null;
@@ -13,9 +12,8 @@ export default class FilmPresenter {
 
   #filmComponent = null;
 
-  constructor ({ filmListContainer, topRatedFilmsContainer, openPopup, changeData }) {
+  constructor ({ filmListContainer, openPopup, changeData }) {
     this.#filmListContainer = filmListContainer;
-    this.#topRatedFilmsContainer = topRatedFilmsContainer;
     this.#changeData = changeData;
     this.#openPopupCallback = openPopup;
   }
@@ -28,20 +26,9 @@ export default class FilmPresenter {
 
     this.#filmComponent.setPropertyClickHandler(this.#handleFilmPropertyClick);
     this.#filmComponent.setFilmCardClickHandler(this.#openPopupCallback);
-  }
 
-  renderInCommonList = () => {
     if (this.#prevFilmComponent === null) {
       render(this.#filmComponent, this.#filmListContainer);
-      return;
-    }
-    replace(this.#filmComponent, this.#prevFilmComponent);
-    remove(this.#prevFilmComponent);
-  }
-
-  renderInTopRated = () => {
-    if (this.#prevFilmComponent === null) {
-      render(this.#filmComponent, this.#topRatedFilmsContainer);
       return;
     }
     replace(this.#filmComponent, this.#prevFilmComponent);
