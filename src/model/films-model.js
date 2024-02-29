@@ -1,11 +1,15 @@
 import camelcaseKeys from 'camelcase-keys';
-import { UpdateType } from '../consts';
+import { EXTRA_FILMS_NUMBER, UpdateType } from '../consts';
 import Observable from '../framework/observable';
 
 export default class FilmsModel extends Observable {
   #films = [];
+  #extraFilms = {
+    topRated: [],
+    mostCommented: [],
+  };
+
   #apiService = null;
-  #observers = new Set();
 
   constructor (apiService) {
     super();
@@ -14,6 +18,19 @@ export default class FilmsModel extends Observable {
 
   get films() {
     return this.#films;
+  }
+
+  get extraFilms() {
+    this.#extraFilms.topRated = this.films
+      .filter((film) => film.filmInfo.totalRating > 0)
+      .sort((film1, film2) => film2.filmInfo.totalRating - film1.filmInfo.totalRating)
+      .slice(0, EXTRA_FILMS_NUMBER);
+    this.#extraFilms.mostCommented = this.films
+      .filter((film) => film.comments.length > 0)
+      .sort((film1, film2) => film2.comments.length - film1.comments.length)
+      .slice(0, EXTRA_FILMS_NUMBER);
+
+    return this.#extraFilms;
   }
 
   init = async () => {

@@ -11,6 +11,17 @@ export const FilterType = {
   FAVORITES: 'Favorites',
 };
 
+export const FilmListTitles = {
+  LOADING: 'Loading...',
+  ALL_FILMS: 'All movies. Upcoming',
+  [FilterType.ALL]: 'There are no movies in our database',
+  [FilterType.WATCHLIST]: 'There are no movies to watch now',
+  [FilterType.HISTORY]: 'There are no watched movies now',
+  [FilterType.FAVORITES]: 'There are no favorite movies now',
+  TOP_RATED: 'Top Rated',
+  MOST_COMMENTED: 'Most Commented',
+};
+
 export const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
@@ -63,8 +74,13 @@ export const FetchMethod = {
   DELETE: 'DELETE',
 };
 
+export const filmsContainerName = {
+  COMMON_LIST: 'COMMON_LIST',
+  TOP_RATED_FILMS: 'TOP_RATED_FILMS',
+  MOST_COMMENTED_FILMS: 'MOST_COMMENTED_FILMS',
+};
+
 export const END_POINT = 'https://20.objects.htmlacademy.pro/cinemaddict/';
 export const AUTHORIZATION = 'Basic dmV0cm92Nzg6dmV0cm92Nzg=';
 export const ENTER_CODE = 13;
-
-
+export const EXTRA_FILMS_NUMBER = 2;

@@ -3,6 +3,7 @@ import { remove, render, replace } from '../framework/render';
 import SiteFilmCardView from '../view/site-film-card/site-film-card-view';
 
 export default class FilmPresenter {
+  #prevFilmComponent = null;
   #filmListContainer = null;
   #film = null;
 
@@ -18,21 +19,20 @@ export default class FilmPresenter {
   }
 
   init(film) {
+    this.#prevFilmComponent = this.#filmComponent;
+
     this.#film = film;
-
-    const prevFilmComponent = this.#filmComponent;
-
     this.#filmComponent = new SiteFilmCardView(film);
 
     this.#filmComponent.setPropertyClickHandler(this.#handleFilmPropertyClick);
     this.#filmComponent.setFilmCardClickHandler(this.#openPopupCallback);
 
-    if (prevFilmComponent === null) {
+    if (this.#prevFilmComponent === null) {
       render(this.#filmComponent, this.#filmListContainer);
       return;
     }
-    replace(this.#filmComponent, prevFilmComponent);
-    remove(prevFilmComponent);
+    replace(this.#filmComponent, this.#prevFilmComponent);
+    remove(this.#prevFilmComponent);
   }
 
   destroy = () => {

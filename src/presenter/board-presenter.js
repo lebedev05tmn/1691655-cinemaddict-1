@@ -1,46 +1,55 @@
-import { FilmCardsOnPage, SortType, UpdateType, ViewActions } from '../consts';
+import { FilmCardsOnPage, SortType, UpdateType, ViewActions, FilmListTitles } from '../consts';
 import { remove, render } from '../framework/render';
 import { filter } from '../utils/filter';
 import { sortTimeDescending } from '../utils/utils';
-import SiteFilmListContainerView from '../view/site-film-list-container/site-film-list-container-view';
+import SiteFilmsListContainerView from '../view/site-films-list-container/site-films-list-container-view';
 import SiteFilmsListView from '../view/site-film-list/site-films-list-view';
 import SiteFilmsContainerView from '../view/site-films-container/site-films-container-view';
-import SiteFilmsLoadingView from '../view/site-films-loading/site-films-loading-view';
 import ShowMoreButtonView from '../view/site-show-more-button/site-show-more-button-view';
 import SiteSortView from '../view/site-sort/site-sort-view';
+import SiteStatisticsView from '../view/site-statistics/site-statistics-view';
 import FilmPresenter from './film-presenter';
 import FilterPresenter from './filter-presenter';
 import PopupPresenter from './popup-presenter';
 
 export default class BoardPresenter {
+  #filmsFromServer = [];
+
   #filmPresenters = new Map();
+  #topRatedFilmsPresenters = new Map();
+  #mostCommentedPresenters = new Map();
   #filterPresenter = null;
   #popupPresenter = null;
 
   #filmsModel = null;
   #filterModel = null;
-  #apiService = null;
   #commentsModel = null;
 
   #boardContainer = null;
   #showMoreButtonComponent = null;
   #sortComponent = null;
+  #footerStatisticsComponent = null;
 
-  #filmListContainerComponent = new SiteFilmListContainerView();
-  #filmsLoadingComponent = new SiteFilmsLoadingView();
-  #allFilmsContainer = new SiteFilmsListView();
   #filmsContainerComponent = new SiteFilmsContainerView();
+
+  //<section class="films-list films-list--extra">
+  #allFilmsList = new SiteFilmsListView();
+  #topRatedFilmsList = new SiteFilmsListView();
+  #mostCommentedFilmsList = new SiteFilmsListView();
+
+  //<div class="films-list__container">
+  #allFilmsListContainer = new SiteFilmsListContainerView();
+  #topRatedFilmsListContainer = new SiteFilmsListContainerView();
+  #mostCommentedFilmsListContainer = new SiteFilmsListContainerView();
 
   #renderedFilmsNumber = FilmCardsOnPage.ALL_PER_STEP;
   #sortType = SortType.DEFAULT;
-
   #isLoading = true;
 
-  constructor(boardContainer, filmsModel, filterModel, apiService, commentsModel) {
+  constructor(boardContainer, filmsModel, filterModel, commentsModel) {
     this.#boardContainer = boardContainer;
     this.#filmsModel = filmsModel;
     this.#filterModel = filterModel;
-    this.#apiService = apiService;
     this.#commentsModel = commentsModel;
 
     this.#filterPresenter = new FilterPresenter(
@@ -52,8 +61,8 @@ export default class BoardPresenter {
 
   get films() {
     const filterType = this.#filterModel.filter;
-    const films = Array.from(this.#filmsModel.films);
-    const filteredFilms = filter[filterType](films);
+    this.#filmsFromServer = Array.from(this.#filmsModel.films);
+    const filteredFilms = filter[filterType](this.#filmsFromServer);
 
     switch (this.#sortType) {
       case SortType.RATING:
@@ -72,36 +81,74 @@ export default class BoardPresenter {
     this.#renderBoard();
   }
 
-  #renderBoard () {
-    render(this.#filmsContainerComponent, this.#boardContainer);
-    render(this.#filmListContainerComponent, this.#filmsContainerComponent.element);
+  #renderFooterStatistics = () => {
+    if (this.#footerStatisticsComponent) {
+      remove(this.#footerStatisticsComponent);
+    }
+    this.#footerStatisticsComponent = new SiteStatisticsView(this.films.length);
+    render(this.#footerStatisticsComponent, document.querySelector('.footer__statistics'));
+  };
 
+  #renderAllFilmsContainer = () => {
+    this.#allFilmsList.init({ titleName: FilmListTitles.ALL_FILMS });
+
+    render(this.#allFilmsList, this.#filmsContainerComponent.element);
+    render(this.#allFilmsListContainer, this.#allFilmsList.element);
+  };
+
+  #renderExtraFilmsContainers = () => {
+    if (this.#filmsModel.extraFilms.topRated.length !== 0) {
+      this.#topRatedFilmsList.init({ titleName: FilmListTitles.TOP_RATED, isExtra: true });
+      render(this.#topRatedFilmsList, this.#filmsContainerComponent.element);
+      render(this.#topRatedFilmsListContainer, this.#topRatedFilmsList.element);
+    }
+    if (this.#filmsModel.extraFilms.mostCommented.length !== 0) {
+      this.#mostCommentedFilmsList.init({ titleName: FilmListTitles.MOST_COMMENTED, isExtra: true });
+      render(this.#mostCommentedFilmsList, this.#filmsContainerComponent.element);
+      render(this.#mostCommentedFilmsListContainer, this.#mostCommentedFilmsList.element);
+    }
+  };
+
+  #renderBoard () {
+    const filmsCount = this.films.length;
+
+    if (!this.#isLoading) {
+      this.#renderSort();
+    }
+    render(this.#filmsContainerComponent, this.#boardContainer);
     this.#filterPresenter.init();
 
     if (this.#isLoading) {
-      this.#renderLoading();
-
+      this.#allFilmsList.init({ titleName: FilmListTitles.LOADING, isEmptyList: true });
+      render(this.#allFilmsList, this.#filmsContainerComponent.element);
       return;
     }
-
-    const filmsCount = this.films.length;
 
     if (filmsCount === 0) {
-      this.#allFilmsContainer.removeElement();
-      this.#allFilmsContainer.init({filterType: this.#filterModel.filter, isEmptyList: true});
-      render(this.#allFilmsContainer, this.#filmsContainerComponent.element);
-
+      this.#allFilmsList.removeElement();
+      this.#allFilmsList.init({titleName: FilmListTitles[this.#filterModel.filter], isEmptyList: true});
+      render(this.#allFilmsList, this.#filmsContainerComponent.element);
       return;
     }
+    this.#renderAllFilmsContainer();
+    this.#renderExtraFilmsContainers();
 
-    this.#renderSort();
-    render(this.#filmsContainerComponent, this.#boardContainer);
-    this.#renderFilms(this.films.slice(0, Math.min(filmsCount, this.#renderedFilmsNumber)));
+    this.#renderFilms(this.films.slice(0, Math.min(filmsCount, this.#renderedFilmsNumber)), this.#allFilmsListContainer);
+    if (this.#filmsModel.extraFilms.topRated.length !== 0) {
+      this.#renderFilms(this.#filmsModel.extraFilms.topRated, this.#topRatedFilmsListContainer);
+    }
+    if (this.#filmsModel.extraFilms.mostCommented.length !== 0) {
+      this.#renderFilms(this.#filmsModel.extraFilms.mostCommented, this.#mostCommentedFilmsListContainer);
+    }
   }
 
   #clearBoard () {
     this.#filmPresenters.forEach((presenter) => presenter.destroy());
+    this.#topRatedFilmsPresenters.forEach((presenter) => presenter.destroy());
+    this.#mostCommentedPresenters.forEach((presenter) => presenter.destroy());
     this.#filmPresenters.clear();
+    this.#topRatedFilmsPresenters.clear();
+    this.#mostCommentedPresenters.clear();
 
     remove(this.#filmsContainerComponent);
     remove(this.#sortComponent);
@@ -114,34 +161,33 @@ export default class BoardPresenter {
     this.#renderBoard();
   }
 
-  #renderFilms (films) {
-    this.#allFilmsContainer.removeElement();
-    this.#allFilmsContainer.init();
+  #renderFilms (films, filmsContainer) {
+    films.forEach((film) => this.#renderFilm({film, filmsContainer}));
 
-    render(this.#allFilmsContainer, this.#filmsContainerComponent.element);
-    render(this.#filmListContainerComponent, this.#allFilmsContainer.element);
-
-    films.forEach((film) => this.#renderFilm(film));
-
-    if (this.#renderedFilmsNumber < this.films.length) {
+    if (this.#renderedFilmsNumber < this.films.length && filmsContainer === this.#allFilmsListContainer) {
       this.#renderShowMoreButton();
     }
   }
 
-  #renderFilm (film) {
+  #renderFilm ({ film, filmsContainer }) {
     const filmPresenter = new FilmPresenter({
-      filmListContainer: this.#filmListContainerComponent.element,
+      filmListContainer: filmsContainer.element,
       openPopup: this.#handleFilmCardClick,
       changeData: this.#handleViewAction,
     });
     filmPresenter.init(film);
-
-    this.#filmPresenters.set(film.id, filmPresenter);
+    if (filmsContainer === this.#topRatedFilmsListContainer) {
+      this.#topRatedFilmsPresenters.set(film.id, filmPresenter);
+    } else if (filmsContainer === this.#mostCommentedFilmsListContainer) {
+      this.#mostCommentedPresenters.set(film.id, filmPresenter);
+    } else {
+      this.#filmPresenters.set(film.id, filmPresenter);
+    }
   }
 
   #renderShowMoreButton () {
     this.#showMoreButtonComponent = new ShowMoreButtonView({onClick: this.#handleShowMoreButtonClick});
-    render(this.#showMoreButtonComponent, this.#filmListContainerComponent.element);
+    render(this.#showMoreButtonComponent, this.#allFilmsList.element);
   }
 
   #handleSortTypeChange = (sortType) => {
@@ -150,10 +196,6 @@ export default class BoardPresenter {
     }
     this.#sortType = sortType;
     this.#reRenderBoard();
-  };
-
-  #renderLoading = () => {
-    render(this.#filmsLoadingComponent, this.#filmListContainerComponent.element);
   };
 
   #renderSort = () => {
@@ -167,9 +209,8 @@ export default class BoardPresenter {
     const films = this.films.slice(this.#renderedFilmsNumber, newRenderedFilmsCount);
 
     remove(this.#showMoreButtonComponent);
-
     this.#renderedFilmsNumber = newRenderedFilmsCount;
-    this.#renderFilms(films);
+    this.#renderFilms(films, this.#allFilmsListContainer);
   };
 
   #escKeyDownHandler = (evt) => {
@@ -223,7 +264,8 @@ export default class BoardPresenter {
       case UpdateType.MAJOR:
         this.#filterPresenter.destroy();
         this.#filterPresenter.init();
-        this.#filmPresenters.get(data.movie.id).init(data.movie);
+        // this.#filmPresenters.get(data.movie.id).init(data.movie);
+        this.#reRenderBoard();
         if (this.#popupPresenter) {
           this.#popupPresenter.init(data.movie, data.comments);
         }
@@ -239,10 +281,10 @@ export default class BoardPresenter {
       case UpdateType.INIT:
         this.#isLoading = false;
         this.#filterPresenter.destroy();
-        remove(this.#filmsLoadingComponent);
+        remove(this.#allFilmsList);
         this.#renderBoard();
+        this.#renderFooterStatistics();
         break;
     }
   };
-
 }
