@@ -18,7 +18,6 @@ export default class SiteFilmPopupView extends AbstractStatefulView {
     this.#film = film;
     this.#comments = comments;
     this._state = COMMENT_BLANK;
-
     this.#setInnerHandlers();
   }
 

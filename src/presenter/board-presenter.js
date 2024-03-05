@@ -258,7 +258,7 @@ export default class BoardPresenter {
   };
 
   #handleModelEvent = (updateType, data) => {
-    // console.log('board-presenter ', updateType);
+    console.log('board-presenter ', updateType);
 
     switch (updateType) {
       case UpdateType.MAJOR:
