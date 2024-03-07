@@ -13,7 +13,7 @@ const getReadbleDate = (date) => {
   });
 
   return dayjs(date).fromNow();
-}
+};
 
 export const createFilmPopup = (film, comments) => {
   const createCommentsList = () => {

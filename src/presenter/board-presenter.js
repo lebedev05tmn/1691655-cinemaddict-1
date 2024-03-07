@@ -258,13 +258,10 @@ export default class BoardPresenter {
   };
 
   #handleModelEvent = (updateType, data) => {
-    console.log('board-presenter ', updateType);
-
     switch (updateType) {
       case UpdateType.MAJOR:
         this.#filterPresenter.destroy();
         this.#filterPresenter.init();
-        // this.#filmPresenters.get(data.movie.id).init(data.movie);
         this.#reRenderBoard();
         if (this.#popupPresenter) {
           this.#popupPresenter.init(data.movie, data.comments);

@@ -81,19 +81,19 @@ export const filmsContainerName = {
 };
 
 export const RelativeTime = {
-  future: "in %s",
-  past: "%s ago",
+  future: 'in %s',
+  past: '%s ago',
   s: 'a few seconds',
-  m: "a minute",
-  mm: "%d minutes",
-  h: "an hour",
-  hh: "%d hours",
-  d: "a day",
-  dd: "%d days",
-  M: "a month",
-  MM: "%d months",
-  y: "a year",
-  yy: "%d years"
+  m: 'a minute',
+  mm: '%d minutes',
+  h: 'an hour',
+  hh: '%d hours',
+  d: 'a day',
+  dd: '%d days',
+  M: 'a month',
+  MM: '%d months',
+  y: 'a year',
+  yy: '%d years'
 };
 
 export const END_POINT = 'https://20.objects.htmlacademy.pro/cinemaddict/';

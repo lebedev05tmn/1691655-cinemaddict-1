@@ -1,7 +1,8 @@
+import he from 'he';
+
 import { CommentReactions, ENTER_CODE, ViewActions } from '../../consts';
 import AbstractStatefulView from '../../framework/view/abstract-stateful-view';
 import { createFilmPopup } from './site-film-popup.tpl';
-import he from 'he';
 
 const COMMENT_BLANK = {
   comment: '',
