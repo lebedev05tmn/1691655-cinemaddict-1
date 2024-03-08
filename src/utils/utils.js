@@ -8,3 +8,4 @@ export const sortTimeDescending = (filmA, filmB) => {
 
   return durationInMinutesB - durationInMinutesA;
 };
+

@@ -1,5 +1,19 @@
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import updateLocale from 'dayjs/plugin/updateLocale';
+import { RelativeTime } from '../../consts';
+
+const getReadbleDate = (date) => {
+  dayjs.extend(relativeTime);
+  dayjs.extend(updateLocale);
+
+  dayjs.updateLocale('en', {
+    relativeTime: RelativeTime,
+  });
+
+  return dayjs(date).fromNow();
+};
 
 export const createFilmPopup = (film, comments) => {
   const createCommentsList = () => {
@@ -15,7 +29,7 @@ export const createFilmPopup = (film, comments) => {
                   <p class="film-details__comment-text">${ comment }</p>
                   <p class="film-details__comment-info">
                     <span class="film-details__comment-author">${ author }</span>
-                    <span class="film-details__comment-day">${ dayjs(date).format('YYYY/MM/DD HH:mm') }</span>
+                    <span class="film-details__comment-day">${ getReadbleDate(date) }</span>
                     <button class="film-details__comment-delete" id="${id}">Delete</button>
                   </p>
                 </div>
