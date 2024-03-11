@@ -100,3 +100,4 @@ export const END_POINT = 'https://20.objects.htmlacademy.pro/cinemaddict/';
 export const AUTHORIZATION = 'Basic dmV0cm92Nzg6dmV0cm92Nzg=';
 export const ENTER_CODE = 13;
 export const EXTRA_FILMS_NUMBER = 2;
+export const DESRIPTION_MAX_SYMBOLS = 139;
