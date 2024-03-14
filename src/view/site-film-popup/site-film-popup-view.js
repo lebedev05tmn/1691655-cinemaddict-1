@@ -4,11 +4,6 @@ import { CommentReactions, ENTER_CODE, ViewActions } from '../../consts';
 import AbstractStatefulView from '../../framework/view/abstract-stateful-view';
 import { createFilmPopup } from './site-film-popup.tpl';
 
-const COMMENT_BLANK = {
-  comment: '',
-  emotion: null,
-};
-
 export default class SiteFilmPopupView extends AbstractStatefulView {
   #film = {};
   #comments = [];
@@ -18,13 +13,22 @@ export default class SiteFilmPopupView extends AbstractStatefulView {
     super();
     this.#film = film;
     this.#comments = comments;
-    this._state = COMMENT_BLANK;
+    this._setState(SiteFilmPopupView.parseCommentToState());
     this.#setInnerHandlers();
   }
 
   get template () {
-    return createFilmPopup(this.#film, this.#comments);
+    return createFilmPopup(this.#film, this.#comments, this._state);
   }
+
+  static parseCommentToState = () => {
+    return {
+      comment: null,
+      emotion: null,
+      isDisabled: false,
+      isDeleting: null,
+    }
+  };
 
   #closePopupHandler = (evt) => {
     evt.preventDefault();
@@ -53,6 +57,11 @@ export default class SiteFilmPopupView extends AbstractStatefulView {
   #deleteCommentHandler = (evt) => {
     evt.preventDefault();
     this._callback.deleteCommentClick(ViewActions.DELETE_COMMENT, evt.target);
+    this.updateElement({
+      isDeleting: evt.target.id,
+    })
+
+    console.log('popup view: ', evt.target.id);
   };
 
   setDeleteCommentHandler = (callback) => {
@@ -67,8 +76,9 @@ export default class SiteFilmPopupView extends AbstractStatefulView {
   #commentSaveHandler = (evt) => {
     if (evt.keyCode === ENTER_CODE && evt.ctrlKey) {
       evt.preventDefault();
-      document.removeEventListener('keydown', this.#commentSaveHandler);
-      if (this._state.comment.length !== 0 && this._state.emotion) {
+
+      if (this._state.comment && this._state.emotion) {
+        document.removeEventListener('keydown', this.#commentSaveHandler);
         this._callback.saveCommentClick(
           ViewActions.UPDATE_COMMENT,
           {
@@ -80,7 +90,7 @@ export default class SiteFilmPopupView extends AbstractStatefulView {
           }
         );
       } else {
-        // console.log('Input comment and emotion');
+        this.shake.call({element: document.querySelector('.film-details__new-comment')});
       }
     }
   };

@@ -15,7 +15,7 @@ const getReadbleDate = (date) => {
   return dayjs(date).fromNow();
 };
 
-export const createFilmPopup = (film, comments) => {
+export const createFilmPopup = (film, comments, state) => {
   const createCommentsList = () => {
     const commentsList = comments.map(
       (commentData) => {
@@ -30,7 +30,7 @@ export const createFilmPopup = (film, comments) => {
                   <p class="film-details__comment-info">
                     <span class="film-details__comment-author">${ author }</span>
                     <span class="film-details__comment-day">${ getReadbleDate(date) }</span>
-                    <button class="film-details__comment-delete" id="${id}">Delete</button>
+                    <button class="film-details__comment-delete" id="${id}">${ state.isDeleting === id ? 'Deleting' : 'Delete' }</button>
                   </p>
                 </div>
               </li>`;

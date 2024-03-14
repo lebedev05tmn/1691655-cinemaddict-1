@@ -1,7 +1,8 @@
-import { FilmCardsOnPage, SortType, UpdateType, ViewActions, FilmListTitles } from '../consts';
+import { FilmCardsOnPage, SortType, UpdateType, ViewActions, FilmListTitles, TimeLimit } from '../consts';
 import { remove, render } from '../framework/render';
 import { filter } from '../utils/filter';
 import { sortTimeDescending } from '../utils/utils';
+import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 import SiteFilmsListContainerView from '../view/site-films-list-container/site-films-list-container-view';
 import SiteFilmsListView from '../view/site-film-list/site-films-list-view';
 import SiteFilmsContainerView from '../view/site-films-container/site-films-container-view';
@@ -11,6 +12,7 @@ import SiteStatisticsView from '../view/site-statistics/site-statistics-view';
 import FilmPresenter from './film-presenter';
 import FilterPresenter from './filter-presenter';
 import PopupPresenter from './popup-presenter';
+
 
 export default class BoardPresenter {
   #filmsFromServer = [];
@@ -45,6 +47,11 @@ export default class BoardPresenter {
   #renderedFilmsNumber = FilmCardsOnPage.ALL_PER_STEP;
   #sortType = SortType.DEFAULT;
   #isLoading = true;
+
+  #uiBlocker = new UiBlocker({
+    lowerLimit: TimeLimit.LOWER_LIMIT,
+    upperLimit: TimeLimit.UPPER_LIMIT
+  });
 
   constructor(boardContainer, filmsModel, filterModel, commentsModel) {
     this.#boardContainer = boardContainer;
@@ -240,6 +247,8 @@ export default class BoardPresenter {
   };
 
   #handleViewAction = async (updateType, update) => {
+    this.#uiBlocker.block();
+
     switch (updateType) {
       case ViewActions.FILM:
         await this.#filmsModel.updateFilmProperty(update);
@@ -250,14 +259,24 @@ export default class BoardPresenter {
         );
         break;
       case ViewActions.DELETE_COMMENT:
-        this.#filmsModel.updateAfterDeleteComment(
-          await this.#commentsModel.deleteComment(update.id)
-        );
+        const deletingResult = await this.#commentsModel.deleteComment(update.id);
+
+        if (deletingResult) {
+          this.#filmsModel.updateAfterDeleteComment(
+            deletingResult
+          );
+        } else {
+          console.log('did not delete');
+        }
         break;
     }
+
+    this.#uiBlocker.unblock();
   };
 
   #handleModelEvent = (updateType, data) => {
+    console.log('board-presenter: ', updateType);
+
     switch (updateType) {
       case UpdateType.MAJOR:
         this.#filterPresenter.destroy();

@@ -1,35 +1,16 @@
 import snakecaseKeys from 'snakecase-keys';
-import { AUTHORIZATION, END_POINT, FetchMethod } from '../consts';
+import { FetchMethod } from '../consts';
+import ApiService from '../framework/api-service';
 
-export default class ApiService {
+export default class FilmsApiService extends ApiService{
 
   get films() {
-    return this.#load({url: 'movies'})
+    return this._load({url: 'movies'})
       .then(ApiService.parseResponse);
   }
 
-  #load = async({
-    url,
-    method = FetchMethod.GET,
-    body = null,
-    headers = new Headers(),
-  }) => {
-    headers.append('Authorization', AUTHORIZATION);
-
-    const response = await fetch(
-      `${END_POINT}${url}`,
-      {method, body, headers}
-    );
-
-    if (!response.ok) {
-      throw new Error(`${response.status}: ${response.statusText}`);
-    } else {
-      return response;
-    }
-  };
-
   updateFilm = async (film) => {
-    const response = await this.#load({
+    const response = await this._load({
       url: `movies/${film.id}`,
       method: FetchMethod.PUT,
       body: JSON.stringify(this.#adaptToServer(film)),
@@ -42,7 +23,7 @@ export default class ApiService {
   };
 
   updateComment = async (update) => {
-    const response = await this.#load({
+    const response = await this._load({
       url: `comments/${update.filmId}`,
       method: FetchMethod.POST,
       body: JSON.stringify(this.#adaptToServer(update.newComment)),
@@ -53,18 +34,22 @@ export default class ApiService {
   };
 
   deleteComment = async (commentId) => {
-    const responce = await this.#load({
-      url: `comments/${commentId}`,
-      method: FetchMethod.DELETE,
-      headers: new Headers({'Content-Type': 'application/json'}),
-    });
-
-    return responce;
+    try {
+      const responce = await this._load({
+        url: `comments/${commentId}`,
+        method: FetchMethod.DELETE,
+        headers: new Headers({'Content-Type': 'application/json'}),
+      });
+      return responce;
+    } catch(err) {
+      console.log('error due deleting');
+    }
+    
   };
 
   static parseResponse = (response) => response.json();
 
-  getComments = (filmId) => this.#load({url: `comments/${filmId}`})
+  getComments = (filmId) => this._load({url: `comments/${filmId}`})
     .then((response) => response.json());
 
   #adaptToServer = (film) => snakecaseKeys(film, {deep: true});
