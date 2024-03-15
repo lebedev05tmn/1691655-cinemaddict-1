@@ -14,7 +14,8 @@ export default class SiteFilmPopupView extends AbstractStatefulView {
     this.#film = film;
     this.#comments = comments;
     this._setState(SiteFilmPopupView.parseCommentToState());
-    this.#setInnerHandlers();
+
+    this._restoreHandlers()
   }
 
   get template () {
@@ -29,6 +30,26 @@ export default class SiteFilmPopupView extends AbstractStatefulView {
       isDeleting: null,
     }
   };
+
+  _restoreHandlers = () => {
+    console.log('site-film-popup-view: restore handlers');
+
+    this.element.querySelector('.film-details__comment-input').addEventListener('input', this.#changeCommentText);
+    this.element.querySelector('.film-details__emoji-list').addEventListener('click', this.#clickEmojiLabel);
+    this.element.addEventListener('scroll', this.#scrollPositionHandler);
+  }
+
+  getScrollPosition() {
+    return this._state.scrollPosition;
+  }
+
+  setScrollPosition(scrollPosition) {
+    this.element.scrollTo(0, scrollPosition);
+  }
+
+  #scrollPositionHandler = () => {
+    this._setState({scrollPosition: this.element.scrollTop})
+  }
 
   #closePopupHandler = (evt) => {
     evt.preventDefault();
@@ -59,9 +80,8 @@ export default class SiteFilmPopupView extends AbstractStatefulView {
     this._callback.deleteCommentClick(ViewActions.DELETE_COMMENT, evt.target);
     this.updateElement({
       isDeleting: evt.target.id,
-    })
-
-    console.log('popup view: ', evt.target.id);
+    });
+    this.element.scrollTo(0, this._state.scrollPosition);
   };
 
   setDeleteCommentHandler = (callback) => {
@@ -78,7 +98,6 @@ export default class SiteFilmPopupView extends AbstractStatefulView {
       evt.preventDefault();
 
       if (this._state.comment && this._state.emotion) {
-        document.removeEventListener('keydown', this.#commentSaveHandler);
         this._callback.saveCommentClick(
           ViewActions.UPDATE_COMMENT,
           {
@@ -100,10 +119,9 @@ export default class SiteFilmPopupView extends AbstractStatefulView {
     document.addEventListener('keydown', this.#commentSaveHandler);
   };
 
-  #setInnerHandlers = () => {
-    this.element.querySelector('.film-details__comment-input').addEventListener('input', this.#changeCommentText);
-    this.element.querySelector('.film-details__emoji-list').addEventListener('click', this.#clickEmojiLabel);
-  };
+  deleteSaveCommentHandler = () => {
+    document.removeEventListener('keydown', this.#commentSaveHandler);
+  }
 
   #changeCommentText = (evt) => {
     evt.preventDefault();

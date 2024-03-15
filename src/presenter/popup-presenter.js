@@ -21,6 +21,12 @@ export default class PopupPresenter {
   }
 
   init (film, comments) {
+    console.log('popup-presenter initing.. ');
+
+    if (this.#popupComponent) {
+      this.#popupComponent.deleteSaveCommentHandler();
+    }
+
     const prevPopupComponent = this.#popupComponent;
 
     this.#film = film;
@@ -38,8 +44,12 @@ export default class PopupPresenter {
       render(this.#popupComponent, document.body);
       return;
     }
+    const scrollPosition = prevPopupComponent.getScrollPosition();
+
     replace(this.#popupComponent, prevPopupComponent);
     remove(prevPopupComponent);
+
+    this.#popupComponent.setScrollPosition(scrollPosition);
   }
 
   destroyComponent = () => {
