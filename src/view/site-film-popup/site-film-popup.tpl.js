@@ -21,7 +21,7 @@ export const createFilmPopup = (film, comments, state) => {
       (commentData) => {
         const { id, author, comment, emotion, date } = commentData;
 
-        return `<li class="film-details__comment">
+        return `<li class="film-details__comment" id=${ id }>
                   <span class="film-details__comment-emoji">
                   <img src="./images/emoji/${ emotion }.png" width="55" height="55" alt="emoji-${ emotion }">
                 </span>

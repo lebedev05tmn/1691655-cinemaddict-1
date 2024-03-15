@@ -3,21 +3,20 @@ import duration from 'dayjs/plugin/duration';
 import { DESRIPTION_MAX_SYMBOLS } from '../../consts';
 
 export const createFilmCard = (film) => {
-  const getDescription = (description) => {
-    if (description.length < DESRIPTION_MAX_SYMBOLS) {
-      return description
+  const getDescription = (desc) => {
+    if (desc.length < DESRIPTION_MAX_SYMBOLS) {
+      return desc;
     } else {
-      const arr = description.split(' ');
-      let result = ''
+      const arr = desc.split(' ');
+      let result = '';
       for (const word of arr) {
-        result += ' ' + word;
+        result += ` ${word}`;
         if (result.length > DESRIPTION_MAX_SYMBOLS) {
-          return result.slice(0, result.length - word.length) + '...'
+          return `${ result.slice(0, result.length - word.length) }...`;
         }
-      } 
+      }
     }
-    
-  }
+  };
   const { title, totalRating, duration: filmDuration, genre, description, poster } = film.filmInfo;
   const releaseYear = new Date(film.filmInfo.release.date).getFullYear();
   const userDetails = film.userDetails;

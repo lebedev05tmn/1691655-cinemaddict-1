@@ -16,7 +16,6 @@ export default class FilmsApiService extends ApiService{
       body: JSON.stringify(this.#adaptToServer(film)),
       headers: new Headers({'Content-Type': 'application/json'}),
     });
-
     const parsedResponse = ApiService.parseResponse(response);
 
     return parsedResponse;
@@ -24,27 +23,21 @@ export default class FilmsApiService extends ApiService{
 
   updateComment = async (update) => {
     const response = await this._load({
-      url: `comments/${update.filmId}`,
+      url: `comments/${update.movie.id}`,
       method: FetchMethod.POST,
       body: JSON.stringify(this.#adaptToServer(update.newComment)),
       headers: new Headers({'Content-Type': 'application/json'}),
     });
-
     return ApiService.parseResponse(response);
   };
 
   deleteComment = async (commentId) => {
-    try {
-      const responce = await this._load({
-        url: `comments/${commentId}`,
-        method: FetchMethod.DELETE,
-        headers: new Headers({'Content-Type': 'application/json'}),
-      });
-      return responce;
-    } catch(err) {
-      console.log('error due deleting');
-    }
-    
+    const responce = await this._load({
+      url: `comments_1/${commentId}`,
+      method: FetchMethod.DELETE,
+      headers: new Headers({'Content-Type': 'application/json'}),
+    });
+    return responce;
   };
 
   static parseResponse = (response) => response.json();

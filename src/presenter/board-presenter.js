@@ -1,4 +1,4 @@
-import { FilmCardsOnPage, SortType, UpdateType, ViewActions, FilmListTitles, TimeLimit } from '../consts';
+import { FilmCardsOnPage, SortType, UpdateType, ViewActions, FilmListTitles, TimeLimit, ViewType } from '../consts';
 import { remove, render } from '../framework/render';
 import { filter } from '../utils/filter';
 import { sortTimeDescending } from '../utils/utils';
@@ -246,37 +246,33 @@ export default class BoardPresenter {
     this.#popupPresenter.init(film, comments);
   };
 
-  #handleViewAction = async (updateType, update) => {
+  #handleViewAction = async (updateType, update, viewType) => {
     this.#uiBlocker.block();
-
-    switch (updateType) {
-      case ViewActions.FILM:
-        await this.#filmsModel.updateFilmProperty(update);
-        break;
-      case ViewActions.UPDATE_COMMENT:
-        this.#filmsModel.updateAfterAddComment(
-          await this.#commentsModel.updateComment(update)
-        );
-        break;
-      case ViewActions.DELETE_COMMENT:
-        const deletingResult = await this.#commentsModel.deleteComment(update.id);
-
-        if (deletingResult) {
-          this.#filmsModel.updateAfterDeleteComment(
-            deletingResult
+    try {
+      switch (updateType) {
+        case ViewActions.FILM:
+          await this.#filmsModel.updateFilmProperty(update);
+          break;
+        case ViewActions.UPDATE_COMMENT:
+          this.#filmsModel.updateAfterAddComment(
+            await this.#commentsModel.updateComment(update)
           );
-        } else {
-          console.log('did not delete');
-        }
-        break;
+          break;
+        case ViewActions.DELETE_COMMENT:
+          this.#filmsModel.updateAfterDeleteComment(
+            await this.#commentsModel.deleteComment(update.commentId)
+          );
+          break;
+      }
+    } catch(err) {
+      if (viewType === ViewType.POPUP) {
+        this.#popupPresenter.setShaking(updateType, update.commentId);
+      }
     }
-
     this.#uiBlocker.unblock();
   };
 
   #handleModelEvent = (updateType, data) => {
-    console.log('board-presenter: ', updateType);
-
     switch (updateType) {
       case UpdateType.MAJOR:
         this.#filterPresenter.destroy();

@@ -31,24 +31,13 @@ export default class CommentsModel extends Observable {
   };
 
   deleteComment = async (commentId) => {
-    const response = await this.#apiService.deleteComment(commentId);
+    await this.#apiService.deleteComment(commentId);
+    await this.init(this.#filmId);
 
-    if (response) {
-      try {
-        await this.init(this.#filmId);
-  
-        return {
-          filmId: this.#filmId,
-          comments: this.#comments
-        };
-      } 
-      catch(err) {
-        throw new Error(`${response.status}: ${response.statusText}`);
-      }
-    } else {
-      return response;
-    }
-    
+    return {
+      filmId: this.#filmId,
+      comments: this.#comments
+    };
   };
 
   #adaptToClient = (film) => camelcaseKeys(film, {deep: true});

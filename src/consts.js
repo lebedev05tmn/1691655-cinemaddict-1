@@ -101,6 +101,13 @@ export const TimeLimit = {
   UPPER_LIMIT: 1000,
 };
 
+export const ViewType = {
+  POPUP: 'POPUP',
+  FILM_LIST: 'FILM_LIST',
+};
+
+export const TimeOutDelay = 300;
+
 export const END_POINT = 'https://20.objects.htmlacademy.pro/cinemaddict';
 export const AUTHORIZATION = 'Basic dmV0cm92Nzg6dmV0cm92Nzg=';
 export const ENTER_CODE = 13;
