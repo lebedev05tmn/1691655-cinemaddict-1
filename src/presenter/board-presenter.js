@@ -3,6 +3,7 @@ import { remove, render } from '../framework/render';
 import { filter } from '../utils/filter';
 import { sortTimeDescending } from '../utils/utils';
 import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
+import UserView from '../view/site-user/site-user-view';
 import SiteFilmsListContainerView from '../view/site-films-list-container/site-films-list-container-view';
 import SiteFilmsListView from '../view/site-film-list/site-films-list-view';
 import SiteFilmsContainerView from '../view/site-films-container/site-films-container-view';
@@ -30,16 +31,15 @@ export default class BoardPresenter {
   #boardContainer = null;
   #showMoreButtonComponent = null;
   #sortComponent = null;
+  #headerComponent = null;
   #footerStatisticsComponent = null;
 
   #filmsContainerComponent = new SiteFilmsContainerView();
 
-  //<section class="films-list films-list--extra">
   #allFilmsList = new SiteFilmsListView();
   #topRatedFilmsList = new SiteFilmsListView();
   #mostCommentedFilmsList = new SiteFilmsListView();
 
-  //<div class="films-list__container">
   #allFilmsListContainer = new SiteFilmsListContainerView();
   #topRatedFilmsListContainer = new SiteFilmsListContainerView();
   #mostCommentedFilmsListContainer = new SiteFilmsListContainerView();
@@ -87,6 +87,14 @@ export default class BoardPresenter {
 
     this.#renderBoard();
   }
+
+  #renderHeader = () => {
+    if (this.#headerComponent) {
+      remove(this.#headerComponent);
+    }
+    this.#headerComponent = new UserView(this.#filmsModel.watchedFilmsCount);
+    render(this.#headerComponent, document.querySelector('.header'));
+  };
 
   #renderFooterStatistics = () => {
     if (this.#footerStatisticsComponent) {
@@ -275,6 +283,7 @@ export default class BoardPresenter {
   #handleModelEvent = (updateType, data) => {
     switch (updateType) {
       case UpdateType.MAJOR:
+        this.#renderHeader();
         this.#filterPresenter.destroy();
         this.#filterPresenter.init();
         this.#reRenderBoard();
@@ -294,6 +303,7 @@ export default class BoardPresenter {
         this.#isLoading = false;
         this.#filterPresenter.destroy();
         remove(this.#allFilmsList);
+        this.#renderHeader();
         this.#renderBoard();
         this.#renderFooterStatistics();
         break;

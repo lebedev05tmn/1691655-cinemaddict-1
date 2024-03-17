@@ -33,7 +33,7 @@ export default class FilmsApiService extends ApiService{
 
   deleteComment = async (commentId) => {
     const responce = await this._load({
-      url: `comments_1/${commentId}`,
+      url: `comments/${commentId}`,
       method: FetchMethod.DELETE,
       headers: new Headers({'Content-Type': 'application/json'}),
     });

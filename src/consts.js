@@ -106,6 +106,21 @@ export const ViewType = {
   FILM_LIST: 'FILM_LIST',
 };
 
+export const WatchedFilmsRank = {
+  NOVICE: {
+    maxCount: 10,
+    rank: 'Novice',
+  },
+  FAN: {
+    maxCount: 20,
+    rank: 'Fan',
+  },
+  MOVIE_BUFF: {
+    maxCount: null,
+    rank: 'Movie Buff',
+  }
+};
+
 export const TimeOutDelay = 300;
 
 export const END_POINT = 'https://20.objects.htmlacademy.pro/cinemaddict';

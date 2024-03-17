@@ -33,6 +33,10 @@ export default class FilmsModel extends Observable {
     return this.#extraFilms;
   }
 
+  get watchedFilmsCount() {
+    return this.films.filter((film) => film.userDetails.alreadyWatched).length;
+  }
+
   init = async () => {
     try {
       const films = await this.#apiService.films;

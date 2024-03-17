@@ -35,7 +35,6 @@ export default class PopupPresenter {
     this.#popupComponent.setPropertyClickHandler(this.#handleFilmPropertyClick);
 
     this.#popupComponent.setSaveCommentHandler(this.#changeData);
-    // this.#popupComponent.setDeleteCommentHandler(this.#changeData);
     this.#popupComponent.setClosePopupHandler(this.destroyComponent);
 
     if (prevPopupComponent === null) {
