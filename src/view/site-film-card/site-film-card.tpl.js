@@ -1,7 +1,22 @@
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
+import { DESRIPTION_MAX_SYMBOLS } from '../../consts';
 
 export const createFilmCard = (film) => {
+  const getDescription = (desc) => {
+    if (desc.length < DESRIPTION_MAX_SYMBOLS) {
+      return desc;
+    } else {
+      const arr = desc.split(' ');
+      let result = '';
+      for (const word of arr) {
+        result += ` ${word}`;
+        if (result.length > DESRIPTION_MAX_SYMBOLS) {
+          return `${ result.slice(0, result.length - word.length) }...`;
+        }
+      }
+    }
+  };
   const { title, totalRating, duration: filmDuration, genre, description, poster } = film.filmInfo;
   const releaseYear = new Date(film.filmInfo.release.date).getFullYear();
   const userDetails = film.userDetails;
@@ -18,7 +33,7 @@ export const createFilmCard = (film) => {
                 <span class="film-card__genre">${ genre[0] }</span>
               </p>
               <img src="${ poster }" alt="" class="film-card__poster">
-              <p class="film-card__description">${ description }</p>
+              <p class="film-card__description">${ getDescription(description) }</p>
               <span class="film-card__comments">${ film.comments.length } comments</span>
             </a>
             <div class="film-card__controls">

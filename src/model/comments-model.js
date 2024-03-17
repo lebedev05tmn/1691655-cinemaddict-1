@@ -31,11 +31,8 @@ export default class CommentsModel extends Observable {
   };
 
   deleteComment = async (commentId) => {
-    const response = await this.#apiService.deleteComment(commentId);
-
-    if (response.ok) {
-      await this.init(this.#filmId);
-    }
+    await this.#apiService.deleteComment(commentId);
+    await this.init(this.#filmId);
 
     return {
       filmId: this.#filmId,

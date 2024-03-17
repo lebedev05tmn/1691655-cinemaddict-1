@@ -96,7 +96,35 @@ export const RelativeTime = {
   yy: '%d years'
 };
 
-export const END_POINT = 'https://20.objects.htmlacademy.pro/cinemaddict/';
+export const TimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
+};
+
+export const ViewType = {
+  POPUP: 'POPUP',
+  FILM_LIST: 'FILM_LIST',
+};
+
+export const WatchedFilmsRank = {
+  NOVICE: {
+    maxCount: 10,
+    rank: 'Novice',
+  },
+  FAN: {
+    maxCount: 20,
+    rank: 'Fan',
+  },
+  MOVIE_BUFF: {
+    maxCount: null,
+    rank: 'Movie Buff',
+  }
+};
+
+export const TimeOutDelay = 300;
+
+export const END_POINT = 'https://20.objects.htmlacademy.pro/cinemaddict';
 export const AUTHORIZATION = 'Basic dmV0cm92Nzg6dmV0cm92Nzg=';
 export const ENTER_CODE = 13;
 export const EXTRA_FILMS_NUMBER = 2;
+export const DESRIPTION_MAX_SYMBOLS = 39;

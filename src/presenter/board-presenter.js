@@ -1,7 +1,9 @@
-import { FilmCardsOnPage, SortType, UpdateType, ViewActions, FilmListTitles } from '../consts';
+import { FilmCardsOnPage, SortType, UpdateType, ViewActions, FilmListTitles, TimeLimit, ViewType } from '../consts';
 import { remove, render } from '../framework/render';
 import { filter } from '../utils/filter';
 import { sortTimeDescending } from '../utils/utils';
+import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
+import UserView from '../view/site-user/site-user-view';
 import SiteFilmsListContainerView from '../view/site-films-list-container/site-films-list-container-view';
 import SiteFilmsListView from '../view/site-film-list/site-films-list-view';
 import SiteFilmsContainerView from '../view/site-films-container/site-films-container-view';
@@ -11,6 +13,7 @@ import SiteStatisticsView from '../view/site-statistics/site-statistics-view';
 import FilmPresenter from './film-presenter';
 import FilterPresenter from './filter-presenter';
 import PopupPresenter from './popup-presenter';
+
 
 export default class BoardPresenter {
   #filmsFromServer = [];
@@ -28,16 +31,15 @@ export default class BoardPresenter {
   #boardContainer = null;
   #showMoreButtonComponent = null;
   #sortComponent = null;
+  #headerComponent = null;
   #footerStatisticsComponent = null;
 
   #filmsContainerComponent = new SiteFilmsContainerView();
 
-  //<section class="films-list films-list--extra">
   #allFilmsList = new SiteFilmsListView();
   #topRatedFilmsList = new SiteFilmsListView();
   #mostCommentedFilmsList = new SiteFilmsListView();
 
-  //<div class="films-list__container">
   #allFilmsListContainer = new SiteFilmsListContainerView();
   #topRatedFilmsListContainer = new SiteFilmsListContainerView();
   #mostCommentedFilmsListContainer = new SiteFilmsListContainerView();
@@ -45,6 +47,11 @@ export default class BoardPresenter {
   #renderedFilmsNumber = FilmCardsOnPage.ALL_PER_STEP;
   #sortType = SortType.DEFAULT;
   #isLoading = true;
+
+  #uiBlocker = new UiBlocker({
+    lowerLimit: TimeLimit.LOWER_LIMIT,
+    upperLimit: TimeLimit.UPPER_LIMIT
+  });
 
   constructor(boardContainer, filmsModel, filterModel, commentsModel) {
     this.#boardContainer = boardContainer;
@@ -80,6 +87,14 @@ export default class BoardPresenter {
 
     this.#renderBoard();
   }
+
+  #renderHeader = () => {
+    if (this.#headerComponent) {
+      remove(this.#headerComponent);
+    }
+    this.#headerComponent = new UserView(this.#filmsModel.watchedFilmsCount);
+    render(this.#headerComponent, document.querySelector('.header'));
+  };
 
   #renderFooterStatistics = () => {
     if (this.#footerStatisticsComponent) {
@@ -239,27 +254,36 @@ export default class BoardPresenter {
     this.#popupPresenter.init(film, comments);
   };
 
-  #handleViewAction = async (updateType, update) => {
-    switch (updateType) {
-      case ViewActions.FILM:
-        await this.#filmsModel.updateFilmProperty(update);
-        break;
-      case ViewActions.UPDATE_COMMENT:
-        this.#filmsModel.updateAfterAddComment(
-          await this.#commentsModel.updateComment(update)
-        );
-        break;
-      case ViewActions.DELETE_COMMENT:
-        this.#filmsModel.updateAfterDeleteComment(
-          await this.#commentsModel.deleteComment(update.id)
-        );
-        break;
+  #handleViewAction = async (updateType, update, viewType) => {
+    this.#uiBlocker.block();
+    try {
+      switch (updateType) {
+        case ViewActions.FILM:
+          await this.#filmsModel.updateFilmProperty(update);
+          break;
+        case ViewActions.UPDATE_COMMENT:
+          this.#filmsModel.updateAfterAddComment(
+            await this.#commentsModel.updateComment(update)
+          );
+          break;
+        case ViewActions.DELETE_COMMENT:
+          this.#filmsModel.updateAfterDeleteComment(
+            await this.#commentsModel.deleteComment(update.commentId)
+          );
+          break;
+      }
+    } catch(err) {
+      if (viewType === ViewType.POPUP) {
+        this.#popupPresenter.setShaking(updateType, update.commentId);
+      }
     }
+    this.#uiBlocker.unblock();
   };
 
   #handleModelEvent = (updateType, data) => {
     switch (updateType) {
       case UpdateType.MAJOR:
+        this.#renderHeader();
         this.#filterPresenter.destroy();
         this.#filterPresenter.init();
         this.#reRenderBoard();
@@ -279,6 +303,7 @@ export default class BoardPresenter {
         this.#isLoading = false;
         this.#filterPresenter.destroy();
         remove(this.#allFilmsList);
+        this.#renderHeader();
         this.#renderBoard();
         this.#renderFooterStatistics();
         break;

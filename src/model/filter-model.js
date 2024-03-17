@@ -4,7 +4,6 @@ import Observable from '../framework/observable';
 
 export default class FilterModel extends Observable {
   #filter = null;
-  #filterStatus = null;
 
   constructor () {
     super();

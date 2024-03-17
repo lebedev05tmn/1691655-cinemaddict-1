@@ -15,13 +15,13 @@ const getReadbleDate = (date) => {
   return dayjs(date).fromNow();
 };
 
-export const createFilmPopup = (film, comments) => {
+export const createFilmPopup = (film, comments, state) => {
   const createCommentsList = () => {
     const commentsList = comments.map(
       (commentData) => {
         const { id, author, comment, emotion, date } = commentData;
 
-        return `<li class="film-details__comment">
+        return `<li class="film-details__comment" id=${ id }>
                   <span class="film-details__comment-emoji">
                   <img src="./images/emoji/${ emotion }.png" width="55" height="55" alt="emoji-${ emotion }">
                 </span>
@@ -30,7 +30,7 @@ export const createFilmPopup = (film, comments) => {
                   <p class="film-details__comment-info">
                     <span class="film-details__comment-author">${ author }</span>
                     <span class="film-details__comment-day">${ getReadbleDate(date) }</span>
-                    <button class="film-details__comment-delete" id="${id}">Delete</button>
+                    <button class="film-details__comment-delete" id="${id}">${ state.isDeleting === id ? 'Deleting' : 'Delete' }</button>
                   </p>
                 </div>
               </li>`;
@@ -101,7 +101,9 @@ export const createFilmPopup = (film, comments) => {
                         <td class="film-details__cell">${ release.releaseCountry }</td>
                       </tr>
                       <tr class="film-details__row">
-                        <td class="film-details__term">Genres</td>
+                        <td class="film-details__term">
+                          ${ genre.length > 1 ? 'Genres' : 'Genre'}
+                        </td>
                         <td class="film-details__cell">
                           ${ genreList }
                       </tr>
