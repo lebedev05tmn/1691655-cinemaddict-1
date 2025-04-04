@@ -1,4 +1,4 @@
-import { FilmCardsOnPage, SortType, UpdateType, ViewActions, FilmListTitles, TimeLimit, ViewType } from '../consts';
+import { FilmCardsOnPage, SortType, UpdateType, ViewActions, FilmListTitles, TimeLimit, ViewType } from '../utils/consts.js';
 import { remove, render } from '../framework/render';
 import { filter } from '../utils/filter';
 import { sortTimeDescending } from '../utils/utils';

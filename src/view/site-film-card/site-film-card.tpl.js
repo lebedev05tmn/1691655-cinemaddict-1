@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
-import { DESRIPTION_MAX_SYMBOLS } from '../../consts';
+import { DESRIPTION_MAX_SYMBOLS } from '../../utils/consts';
 
 export const createFilmCard = (film) => {
   const getDescription = (desc) => {

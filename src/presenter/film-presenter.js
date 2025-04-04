@@ -1,4 +1,4 @@
-import { FilmPropertyRelation, ViewActions } from '../consts';
+import { FilmPropertyRelation, ViewActions } from '../utils/consts';
 import { remove, render, replace } from '../framework/render';
 import SiteFilmCardView from '../view/site-film-card/site-film-card-view';
 

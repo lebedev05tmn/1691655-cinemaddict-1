@@ -1,5 +1,5 @@
 import camelcaseKeys from 'camelcase-keys';
-import { EXTRA_FILMS_NUMBER, UpdateType } from '../consts';
+import { EXTRA_FILMS_NUMBER, UpdateType } from '../utils/consts';
 import Observable from '../framework/observable';
 
 export default class FilmsModel extends Observable {

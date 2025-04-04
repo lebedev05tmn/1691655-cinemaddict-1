@@ -1,6 +1,6 @@
 import he from 'he';
 
-import { CommentReactions, ENTER_CODE, TimeOutDelay, ViewActions, ViewType } from '../../consts';
+import { CommentReactions, ENTER_CODE, TimeOutDelay, ViewActions, ViewType } from '../../utils/consts';
 import AbstractStatefulView from '../../framework/view/abstract-stateful-view';
 import { createFilmPopup } from './site-film-popup.tpl';
 

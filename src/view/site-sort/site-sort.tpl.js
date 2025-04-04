@@ -1,4 +1,4 @@
-import { SortType } from '../../consts';
+import { SortType } from '../../utils/consts';
 
 const createSortItemTemplate = (sortType, currentSort) =>
   `<li>

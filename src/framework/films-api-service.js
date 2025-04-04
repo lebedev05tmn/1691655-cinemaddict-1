@@ -1,5 +1,5 @@
 import snakecaseKeys from 'snakecase-keys';
-import { FetchMethod } from '../consts';
+import { FetchMethod } from '../utils/consts';
 import ApiService from './api-service';
 
 export default class FilmsApiService extends ApiService{

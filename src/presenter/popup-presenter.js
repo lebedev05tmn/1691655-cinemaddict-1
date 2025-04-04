@@ -1,4 +1,4 @@
-import { FilmPropertyRelation, ViewActions, ViewType } from '../consts';
+import { FilmPropertyRelation, ViewActions, ViewType } from '../utils/consts';
 import { remove, render, replace } from '../framework/render';
 import SiteFilmPopupView from '../view/site-film-popup/site-film-popup-view';
 

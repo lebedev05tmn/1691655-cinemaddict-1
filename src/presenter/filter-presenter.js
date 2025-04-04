@@ -1,4 +1,4 @@
-import { FilterType, FilteredFilmsCount } from '../consts';
+import { FilterType, FilteredFilmsCount } from '../utils/consts';
 import { RenderPosition, remove, render } from '../framework/render';
 import SiteFiltersView from '../view/site-filters/site-filters-view';
 import { filter } from '../utils/filter';

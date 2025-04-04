@@ -1,4 +1,4 @@
-import { FilterType } from '../../consts';
+import { FilterType } from '../../utils/consts';
 
 const createFiltersItem = (filterType, currentFilter, filmsCount) =>
   `<a

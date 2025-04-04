@@ -1,9 +1,9 @@
-import { AUTHORIZATION, END_POINT } from './consts';
+import { AUTHORIZATION, END_POINT } from './utils/consts';
 import CommentsModel from './model/comments-model';
 import FilmsModel from './model/films-model';
 import FilterModel from './model/filter-model';
 import BoardPresenter from './presenter/board-presenter';
-import FilmsApiService from './services/films-api-service';
+import FilmsApiService from './framework/films-api-service';
 
 const mainContainer = document.querySelector('.main');
 

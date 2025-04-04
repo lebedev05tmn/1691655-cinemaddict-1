@@ -1,4 +1,4 @@
-import { WatchedFilmsRank } from '../../consts';
+import { WatchedFilmsRank } from '../../utils/consts';
 
 const getRankTemplate = (filmsNumber) => {
   if (filmsNumber === 0) {

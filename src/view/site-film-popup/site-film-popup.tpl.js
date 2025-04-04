@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import updateLocale from 'dayjs/plugin/updateLocale';
-import { RelativeTime } from '../../consts';
+import { RelativeTime } from '../../utils/consts';
 
 const getReadbleDate = (date) => {
   dayjs.extend(relativeTime);

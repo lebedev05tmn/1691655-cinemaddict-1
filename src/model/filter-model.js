@@ -1,4 +1,4 @@
-import { FilterType, UpdateType } from '../consts';
+import { FilterType, UpdateType } from '../utils/consts';
 import Observable from '../framework/observable';
 
 
