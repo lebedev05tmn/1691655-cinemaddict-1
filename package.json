@@ -2,7 +2,6 @@
   "name": "cinemaddict",
   "version": "20.0.0",
   "private": true,
-  "description": "Проект «Киноман» от HTML Academy",
   "scripts": {
     "lint": "eslint src/",
     "build": "webpack --mode production",
